@@ -30,8 +30,8 @@ export function ScheduleEditorPage() {
         type: 'teoria',
         week: 1,
         order: 0,
-        driveVideoId: '',
-        driveDocId: ''
+        driveVideos: [],
+        driveDocs: []
     });
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState('');
@@ -63,8 +63,8 @@ export function ScheduleEditorPage() {
             type: item.type || 'teoria',
             week: item.week || 1,
             order: item.order || 0,
-            driveVideoId: item.driveVideoId || '',
-            driveDocId: item.driveDocId || ''
+            driveVideos: item.driveVideos ? [...item.driveVideos] : (item.driveVideoId ? [{ id: item.driveVideoId, title: 'Vídeo Principal' }] : []),
+            driveDocs: item.driveDocs ? [...item.driveDocs] : (item.driveDocId ? [{ id: item.driveDocId, title: 'Apostila Principal' }] : []),
         });
         setError('');
         setSuccess('');
@@ -79,8 +79,8 @@ export function ScheduleEditorPage() {
             type: 'teoria',
             week: lastItem ? (lastItem.week || 1) : 1,
             order: lastItem ? (lastItem.order || 0) + 1 : 1,
-            driveVideoId: '',
-            driveDocId: ''
+            driveVideos: [],
+            driveDocs: []
         });
         setError('');
         setSuccess('');
@@ -92,6 +92,44 @@ export function ScheduleEditorPage() {
             ...prev,
             [name]: name === 'week' || name === 'order' ? Number(value) : value
         }));
+    };
+
+    const handleAddVideo = () => {
+        setFormData((prev: any) => ({ ...prev, driveVideos: [...(prev.driveVideos || []), { id: '', title: '' }] }));
+    };
+
+    const handleRemoveVideo = (index: number) => {
+        setFormData((prev: any) => ({
+            ...prev,
+            driveVideos: prev.driveVideos.filter((_: any, i: number) => i !== index)
+        }));
+    };
+
+    const handleUpdateVideo = (index: number, field: string, value: string) => {
+        setFormData((prev: any) => {
+            const newVideos = [...prev.driveVideos];
+            newVideos[index] = { ...newVideos[index], [field]: value };
+            return { ...prev, driveVideos: newVideos };
+        });
+    };
+
+    const handleAddDoc = () => {
+        setFormData((prev: any) => ({ ...prev, driveDocs: [...(prev.driveDocs || []), { id: '', title: '' }] }));
+    };
+
+    const handleRemoveDoc = (index: number) => {
+        setFormData((prev: any) => ({
+            ...prev,
+            driveDocs: prev.driveDocs.filter((_: any, i: number) => i !== index)
+        }));
+    };
+
+    const handleUpdateDoc = (index: number, field: string, value: string) => {
+        setFormData((prev: any) => {
+            const newDocs = [...prev.driveDocs];
+            newDocs[index] = { ...newDocs[index], [field]: value };
+            return { ...prev, driveDocs: newDocs };
+        });
     };
 
     const handleSave = async (e: React.FormEvent) => {
@@ -106,13 +144,19 @@ export function ScheduleEditorPage() {
             setError('');
             setSuccess('');
 
+            const payload = {
+                ...formData,
+                driveVideoId: null, // Clear legacy values inside database
+                driveDocId: null
+            };
+
             if (selectedItem) {
                 // Update
-                await scheduleService.updateMetaContent(selectedItem.id, formData);
+                await scheduleService.updateMetaContent(selectedItem.id, payload);
                 setSuccess('Tópico atualizado com sucesso!');
             } else {
                 // Create
-                await scheduleService.addMetaContent(formData);
+                await scheduleService.addMetaContent(payload);
                 setSuccess('Novo tópico criado com sucesso!');
             }
 
@@ -283,27 +327,78 @@ export function ScheduleEditorPage() {
                             />
                         </div>
 
-                        <div className="border-t border-secondary-800 pt-6 space-y-4">
-                            <h3 className="text-sm font-medium text-secondary-300">Integração de Mídia (IDs do Google Drive)</h3>
+                        <div className="border-t border-secondary-800 pt-6 space-y-6">
 
-                            <div className="grid grid-cols-1 gap-4">
-                                <Input
-                                    label="Google Drive View ID (Apostila PDF)"
-                                    name="driveDocId"
-                                    value={formData.driveDocId}
-                                    onChange={handleInputChange}
-                                    placeholder="Ex: 1xYz2..."
-                                    icon={<FileText className="w-4 h-4" />}
-                                />
+                            {/* Videos Section */}
+                            <div>
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-medium text-secondary-300">Vídeo-Aulas (Google Drive)</h3>
+                                    <Button type="button" variant="ghost" size="sm" onClick={handleAddVideo} className="h-8 text-xs border border-secondary-700">
+                                        <Plus className="w-3 h-3 mr-1" /> Adicionar Vídeo
+                                    </Button>
+                                </div>
 
-                                <Input
-                                    label="Google Drive View ID (Vídeo-Aula)"
-                                    name="driveVideoId"
-                                    value={formData.driveVideoId}
-                                    onChange={handleInputChange}
-                                    placeholder="Ex: 1aBc3..."
-                                    icon={<Play className="w-4 h-4" />}
-                                />
+                                <div className="space-y-3">
+                                    {formData.driveVideos?.map((v: any, index: number) => (
+                                        <div key={`video-${index}`} className="flex items-start gap-2 bg-secondary-800/50 p-3 rounded-lg border border-secondary-700">
+                                            <div className="flex-1 space-y-3">
+                                                <Input
+                                                    placeholder="Título do Vídeo (ex: Parte 1)"
+                                                    value={v.title}
+                                                    onChange={(e) => handleUpdateVideo(index, 'title', e.target.value)}
+                                                />
+                                                <Input
+                                                    placeholder="Google Drive View ID (ex: 1aBc3...)"
+                                                    value={v.id}
+                                                    onChange={(e) => handleUpdateVideo(index, 'id', e.target.value)}
+                                                    icon={<Play className="w-4 h-4" />}
+                                                />
+                                            </div>
+                                            <Button type="button" variant="danger" className="mt-1 shrink-0 h-11 w-11 p-0 flex items-center justify-center" onClick={() => handleRemoveVideo(index)}>
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    {(!formData.driveVideos || formData.driveVideos.length === 0) && (
+                                        <p className="text-sm text-secondary-500 text-center py-3 bg-secondary-900/50 rounded-lg border border-secondary-800 border-dashed">Nenhum vídeo adicionado.</p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Docs Section */}
+                            <div className="pt-4 border-t border-secondary-800/50">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-medium text-secondary-300">Apostilas PDF (Google Drive)</h3>
+                                    <Button type="button" variant="ghost" size="sm" onClick={handleAddDoc} className="h-8 text-xs border border-secondary-700">
+                                        <Plus className="w-3 h-3 mr-1" /> Adicionar PDF
+                                    </Button>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {formData.driveDocs?.map((d: any, index: number) => (
+                                        <div key={`doc-${index}`} className="flex items-start gap-2 bg-secondary-800/50 p-3 rounded-lg border border-secondary-700">
+                                            <div className="flex-1 space-y-3">
+                                                <Input
+                                                    placeholder="Título do PDF (ex: Apostila Principal)"
+                                                    value={d.title}
+                                                    onChange={(e) => handleUpdateDoc(index, 'title', e.target.value)}
+                                                />
+                                                <Input
+                                                    placeholder="Google Drive View ID (ex: 1xYz2...)"
+                                                    value={d.id}
+                                                    onChange={(e) => handleUpdateDoc(index, 'id', e.target.value)}
+                                                    icon={<FileText className="w-4 h-4" />}
+                                                />
+                                            </div>
+                                            <Button type="button" variant="danger" className="mt-1 shrink-0 h-11 w-11 p-0 flex items-center justify-center" onClick={() => handleRemoveDoc(index)}>
+                                                <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                    {(!formData.driveDocs || formData.driveDocs.length === 0) && (
+                                        <p className="text-sm text-secondary-500 text-center py-3 bg-secondary-900/50 rounded-lg border border-secondary-800 border-dashed">Nenhum PDF adicionado.</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </form>
