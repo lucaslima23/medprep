@@ -1,0 +1,240 @@
+[
+  {
+    "title": "Introdução à Ginecologia",
+    "subject": "ginecologia",
+    "order": 1,
+    "driveVideoId": "VIDEO_ID_1",
+    "driveDocId": "DOC_ID_1"
+  },
+  {
+    "title": "Ciclo Menstrual e Fisiologia",
+    "subject": "ginecologia",
+    "order": 2,
+    "driveVideoId": "VIDEO_ID_2",
+    "driveDocId": "DOC_ID_2"
+  },
+  {
+    "title": "Contraceptivos e Planejamento",
+    "subject": "ginecologia",
+    "order": 3,
+    "driveVideoId": "VIDEO_ID_3",
+    "driveDocId": "DOC_ID_3"
+  },
+  {
+    "title": "Inflamação Pélvica",
+    "subject": "ginecologia",
+    "order": 4,
+    "driveVideoId": "VIDEO_ID_4",
+    "driveDocId": "DOC_ID_4"
+  },
+  {
+    "title": "Tumores Ginecológicos",
+    "subject": "ginecologia",
+    "order": 5,
+    "driveVideoId": "VIDEO_ID_5",
+    "driveDocId": "DOC_ID_5"
+  },
+  {
+    "title": "Gravidez Ectópica",
+    "subject": "ginecologia",
+    "order": 6,
+    "driveVideoId": "VIDEO_ID_6",
+    "driveDocId": "DOC_ID_6"
+  },
+  {
+    "title": "Gestação Normal",
+    "subject": "ginecologia",
+    "order": 7,
+    "driveVideoId": "VIDEO_ID_7",
+    "driveDocId": "DOC_ID_7"
+  },
+  {
+    "title": "Complicações da Gestação",
+    "subject": "ginecologia",
+    "order": 8,
+    "driveVideoId": "VIDEO_ID_8",
+    "driveDocId": "DOC_ID_8"
+  },
+  {
+    "title": "Trabalho de Parto",
+    "subject": "ginecologia",
+    "order": 9,
+    "driveVideoId": "VIDEO_ID_9",
+    "driveDocId": "DOC_ID_9"
+  },
+  {
+    "title": "Puerério e Pós-parto",
+    "subject": "ginecologia",
+    "order": 10,
+    "driveVideoId": "VIDEO_ID_10",
+    "driveDocId": "DOC_ID_10"
+  },
+  {
+    "title": "Introdução à Pediatria",
+    "subject": "pediatria",
+    "order": 11,
+    "driveVideoId": "VIDEO_ID_11",
+    "driveDocId": "DOC_ID_11"
+  },
+  {
+    "title": "Crescimento e Desenvolvimento",
+    "subject": "pediatria",
+    "order": 12,
+    "driveVideoId": "VIDEO_ID_12",
+    "driveDocId": "DOC_ID_12"
+  },
+  {
+    "title": "Aleitamento Materno",
+    "subject": "pediatria",
+    "order": 13,
+    "driveVideoId": "VIDEO_ID_13",
+    "driveDocId": "DOC_ID_13"
+  },
+  {
+    "title": "Infecções Virais Pediátricas",
+    "subject": "pediatria",
+    "order": 14,
+    "driveVideoId": "VIDEO_ID_14",
+    "driveDocId": "DOC_ID_14"
+  },
+  {
+    "title": "Doenças Alérgicas em Crianças",
+    "subject": "pediatria",
+    "order": 15,
+    "driveVideoId": "VIDEO_ID_15",
+    "driveDocId": "DOC_ID_15"
+  },
+  {
+    "title": "Neurologia Pediátrica",
+    "subject": "pediatria",
+    "order": 16,
+    "driveVideoId": "VIDEO_ID_16",
+    "driveDocId": "DOC_ID_16"
+  },
+  {
+    "title": "Cardiologia Pediátrica",
+    "subject": "pediatria",
+    "order": 17,
+    "driveVideoId": "VIDEO_ID_17",
+    "driveDocId": "DOC_ID_17"
+  },
+  {
+    "title": "Nutrição Pediátrica",
+    "subject": "pediatria",
+    "order": 18,
+    "driveVideoId": "VIDEO_ID_18",
+    "driveDocId": "DOC_ID_18"
+  },
+  {
+    "title": "Introdução à Cirurgia",
+    "subject": "cirurgia",
+    "order": 19,
+    "driveVideoId": "VIDEO_ID_19",
+    "driveDocId": "DOC_ID_19"
+  },
+  {
+    "title": "Semiótica Cirúrgica",
+    "subject": "cirurgia",
+    "order": 20,
+    "driveVideoId": "VIDEO_ID_20",
+    "driveDocId": "DOC_ID_20"
+  },
+  {
+    "title": "Cirurgia do Abdome",
+    "subject": "cirurgia",
+    "order": 21,
+    "driveVideoId": "VIDEO_ID_21",
+    "driveDocId": "DOC_ID_21"
+  },
+  {
+    "title": "Cirurgia Cardiovascular",
+    "subject": "cirurgia",
+    "order": 22,
+    "driveVideoId": "VIDEO_ID_22",
+    "driveDocId": "DOC_ID_22"
+  },
+  {
+    "title": "Cirurgia Torácica",
+    "subject": "cirurgia",
+    "order": 23,
+    "driveVideoId": "VIDEO_ID_23",
+    "driveDocId": "DOC_ID_23"
+  },
+  {
+    "title": "Cirurgia de Cabeça e Pescoço",
+    "subject": "cirurgia",
+    "order": 24,
+    "driveVideoId": "VIDEO_ID_24",
+    "driveDocId": "DOC_ID_24"
+  },
+  {
+    "title": "Introdução à Clínica Médica",
+    "subject": "clinica_medica",
+    "order": 25,
+    "driveVideoId": "VIDEO_ID_25",
+    "driveDocId": "DOC_ID_25"
+  },
+  {
+    "title": "Semiologia Clínica",
+    "subject": "clinica_medica",
+    "order": 26,
+    "driveVideoId": "VIDEO_ID_26",
+    "driveDocId": "DOC_ID_26"
+  },
+  {
+    "title": "Hipertensão Arterial",
+    "subject": "clinica_medica",
+    "order": 27,
+    "driveVideoId": "VIDEO_ID_27",
+    "driveDocId": "DOC_ID_27"
+  },
+  {
+    "title": "Diabetes Mellitus",
+    "subject": "clinica_medica",
+    "order": 28,
+    "driveVideoId": "VIDEO_ID_28",
+    "driveDocId": "DOC_ID_28"
+  },
+  {
+    "title": "Doenças Cardiovasculares",
+    "subject": "clinica_medica",
+    "order": 29,
+    "driveVideoId": "VIDEO_ID_29",
+    "driveDocId": "DOC_ID_29"
+  },
+  {
+    "title": "Infecções e Inflamação",
+    "subject": "clinica_medica",
+    "order": 30,
+    "driveVideoId": "VIDEO_ID_30",
+    "driveDocId": "DOC_ID_30"
+  },
+  {
+    "title": "Epidemiologia",
+    "subject": "preventiva",
+    "order": 31,
+    "driveVideoId": "VIDEO_ID_31",
+    "driveDocId": "DOC_ID_31"
+  },
+  {
+    "title": "Bioestatística",
+    "subject": "preventiva",
+    "order": 32,
+    "driveVideoId": "VIDEO_ID_32",
+    "driveDocId": "DOC_ID_32"
+  },
+  {
+    "title": "Vacinas e Imunização",
+    "subject": "preventiva",
+    "order": 33,
+    "driveVideoId": "VIDEO_ID_33",
+    "driveDocId": "DOC_ID_33"
+  },
+  {
+    "title": "Saúde Pública",
+    "subject": "preventiva",
+    "order": 34,
+    "driveVideoId": "VIDEO_ID_34",
+    "driveDocId": "DOC_ID_34"
+  }
+]

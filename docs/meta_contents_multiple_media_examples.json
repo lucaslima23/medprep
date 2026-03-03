@@ -1,0 +1,427 @@
+{
+  "metaContentsExampleWithMultipleMedia": [
+    {
+      "title": "Pré-Eclâmpsia e Eclâmpsia",
+      "subject": "ginecologia",
+      "order": 1,
+      "driveVideos": [
+        {
+          "id": "1a2b3c4d5e6f7g8h",
+          "title": "Fisiopatologia e Fatores de Risco",
+          "order": 1
+        },
+        {
+          "id": "9i0j1k2l3m4n5o6p",
+          "title": "Diagnóstico Clínico e Laboratorial",
+          "order": 2
+        },
+        {
+          "id": "7q8r9s0t1u2v3w4x",
+          "title": "Manejo e Tratamento",
+          "order": 3
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "5y6z7a8b9c0d1e2f",
+          "title": "Protocolo Hospitalar Completo",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "title": "Cirurgia de Catarata",
+      "subject": "oftalmologia",
+      "order": 2,
+      "driveVideos": [
+        {
+          "id": "3g4h5i6j7k8l9m0n",
+          "title": "Anatomia do Cristalino",
+          "order": 1
+        },
+        {
+          "id": "1o2p3q4r5s6t7u8v",
+          "title": "Técnica Facoemulsificação",
+          "order": 2
+        },
+        {
+          "id": "9w0x1y2z3a4b5c6d",
+          "title": "Complicações e Manejo",
+          "order": 3
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "7e8f9g0h1i2j3k4l",
+          "title": "Passo a Passo Ilustrado",
+          "order": 1
+        },
+        {
+          "id": "5m6n7o8p9q0r1s2t",
+          "title": "Casos Clínicos",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "title": "ATLS - Advanced Trauma Life Support",
+      "subject": "cirurgia",
+      "order": 3,
+      "driveVideos": [
+        {
+          "id": "3u4v5w6x7y8z9a0b",
+          "title": "ABC - Avaliação Primária",
+          "order": 1
+        },
+        {
+          "id": "1c2d3e4f5g6h7i8j",
+          "title": "Avaliação Secundária Completa",
+          "order": 2
+        },
+        {
+          "id": "9k0l1m2n3o4p5q6r",
+          "title": "Manejo Definitivo",
+          "order": 3
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "7s8t9u0v1w2x3y4z",
+          "title": "Módulo 1: ABC",
+          "order": 1
+        },
+        {
+          "id": "5a6b7c8d9e0f1g2h",
+          "title": "Módulo 2: Avaliação Secundária",
+          "order": 2
+        },
+        {
+          "id": "3i4j5k6l7m8n9o0p",
+          "title": "Módulo 3: Procedimentos",
+          "order": 3
+        }
+      ]
+    },
+    {
+      "title": "Infarto Agudo do Miocárdio",
+      "subject": "cardiologia",
+      "order": 4,
+      "driveVideos": [
+        {
+          "id": "1q2r3s4t5u6v7w8x",
+          "title": "Fisiopatologia do IAM",
+          "order": 1
+        },
+        {
+          "id": "9y0z1a2b3c4d5e6f",
+          "title": "Diagnóstico: ECG e Troponina",
+          "order": 2
+        },
+        {
+          "id": "7g8h9i0j1k2l3m4n",
+          "title": "Estratégias de Reperfusão",
+          "order": 3
+        },
+        {
+          "id": "5o6p7q8r9s0t1u2v",
+          "title": "Manejo Farmacológico",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "3w4x5y6z7a8b9c0d",
+          "title": "Algoritmo de Decisão",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "title": "Fratura de Quadril - Manejo Cirúrgico",
+      "subject": "ortopedia",
+      "order": 5,
+      "driveVideos": [
+        {
+          "id": "1e2f3g4h5i6j7k8l",
+          "title": "Anatomia e Classificação",
+          "order": 1
+        },
+        {
+          "id": "9m0n1o2p3q4r5s6t",
+          "title": "Avaliação Pré-Operatória",
+          "order": 2
+        },
+        {
+          "id": "7u8v9w0x1y2z3a4b",
+          "title": "Osteossíntese com Placa",
+          "order": 3
+        },
+        {
+          "id": "5c6d7e8f9g0h1i2j",
+          "title": "Artroplastia",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "3k4l5m6n7o8p9q0r",
+          "title": "Técnica Step-by-Step",
+          "order": 1
+        },
+        {
+          "id": "1s2t3u4v5w6x7y8z",
+          "title": "Complicações Pós-Op",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "title": "Meningite Bacteriana",
+      "subject": "neurologia",
+      "order": 6,
+      "driveVideos": [
+        {
+          "id": "9a0b1c2d3e4f5g6h",
+          "title": "Agentes Etiológicos",
+          "order": 1
+        },
+        {
+          "id": "7i8j9k0l1m2n3o4p",
+          "title": "Quadro Clínico e Diagnóstico",
+          "order": 2
+        },
+        {
+          "id": "5q6r7s8t9u0v1w2x",
+          "title": "Punção Lombar e Análise do LCR",
+          "order": 3
+        },
+        {
+          "id": "3y4z5a6b7c8d9e0f",
+          "title": "Tratamento Antibiótico",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "1g2h3i4j5k6l7m8n",
+          "title": "Protocolo de Tratamento",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "title": "Sepse e Choque Séptico",
+      "subject": "terapia_intensiva",
+      "order": 7,
+      "driveVideos": [
+        {
+          "id": "9o0p1q2r3s4t5u6v",
+          "title": "Definições e Parâmetros SOFA",
+          "order": 1
+        },
+        {
+          "id": "7w8x9y0z1a2b3c4d",
+          "title": "Reconhecimento Precoce",
+          "order": 2
+        },
+        {
+          "id": "5e6f7g8h9i0j1k2l",
+          "title": "Bundles de Resgate de 1 Hora",
+          "order": 3
+        },
+        {
+          "id": "3m4n5o6p7q8r9s0t",
+          "title": "Suporte Hemodinâmico",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "1u2v3w4x5y6z7a8b",
+          "title": "Protocolo Sepse 6",
+          "order": 1
+        },
+        {
+          "id": "9c0d1e2f3g4h5i6j",
+          "title": "Fluxograma de Atendimento",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "title": "Abdômen Agudo - Avaliação Clínica",
+      "subject": "cirurgia",
+      "order": 8,
+      "driveVideos": [
+        {
+          "id": "7k8l9m0n1o2p3q4r",
+          "title": "Semiologia Abdominal",
+          "order": 1
+        },
+        {
+          "id": "5s6t7u8v9w0x1y2z",
+          "title": "Diferencial de Sangramento",
+          "order": 2
+        },
+        {
+          "id": "3a4b5c6d7e8f9g0h",
+          "title": "Diferencial de Inflamação",
+          "order": 3
+        },
+        {
+          "id": "1i2j3k4l5m6n7o8p",
+          "title": "Quando Operar?",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "9q0r1s2t3u4v5w6x",
+          "title": "Classificação de Urgência",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "title": "Parto Normal - Fisiologia e Manejo",
+      "subject": "ginecologia",
+      "order": 9,
+      "driveVideos": [
+        {
+          "id": "7y8z9a0b1c2d3e4f",
+          "title": "Fases do Parto",
+          "order": 1
+        },
+        {
+          "id": "5g6h7i8j9k0l1m2n",
+          "title": "Assistência não-farmacológica",
+          "order": 2
+        },
+        {
+          "id": "3o4p5q6r7s8t9u0v",
+          "title": "Monitoragem Fetal",
+          "order": 3
+        },
+        {
+          "id": "1w2x3y4z5a6b7c8d",
+          "title": "Direcionamento de Puxos",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "9e0f1g2h3i4j5k6l",
+          "title": "Checklist Parto Normal",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "title": "Síndrome do Desconforto Respiratório",
+      "subject": "pediatria",
+      "order": 10,
+      "driveVideos": [
+        {
+          "id": "7m8n9o0p1q2r3s4t",
+          "title": "Fisiologia Pulmonar Fetal",
+          "order": 1
+        },
+        {
+          "id": "5u6v7w8x9y0z1a2b",
+          "title": "Fatores de Risco",
+          "order": 2
+        },
+        {
+          "id": "3c4d5e6f7g8h9i0j",
+          "title": "Diagnóstico e Avaliação",
+          "order": 3
+        },
+        {
+          "id": "1k2l3m4n5o6p7q8r",
+          "title": "Surfactante e Ventilação",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "9s0t1u2v3w4x5y6z",
+          "title": "Scores de Severidade",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "title": "Diabetes Mellitus Tipo 2",
+      "subject": "endocrinologia",
+      "order": 11,
+      "driveVideos": [
+        {
+          "id": "7a8b9c0d1e2f3g4h",
+          "title": "Fisiopatologia e Resistência à Insulina",
+          "order": 1
+        },
+        {
+          "id": "5i6j7k8l9m0n1o2p",
+          "title": "Diagnóstico e Estratificação",
+          "order": 2
+        },
+        {
+          "id": "3q4r5s6t7u8v9w0x",
+          "title": "Tratamento Farmacológico",
+          "order": 3
+        },
+        {
+          "id": "1y2z3a4b5c6d7e8f",
+          "title": "Prevenção de Complicações",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "9g0h1i2j3k4l5m6n",
+          "title": "Algoritmo de Manejo",
+          "order": 1
+        },
+        {
+          "id": "7o8p9q0r1s2t3u4v",
+          "title": "Monitoria Glicêmica",
+          "order": 2
+        }
+      ]
+    },
+    {
+      "title": "Asma no Adulto",
+      "subject": "pneumologia",
+      "order": 12,
+      "driveVideos": [
+        {
+          "id": "5w6x7y8z9a0b1c2d",
+          "title": "Inflamação das Vias Aéreas",
+          "order": 1
+        },
+        {
+          "id": "3e4f5g6h7i8j9k0l",
+          "title": "Apresentação Clínica",
+          "order": 2
+        },
+        {
+          "id": "1m2n3o4p5q6r7s8t",
+          "title": "Controle vs Alívio",
+          "order": 3
+        },
+        {
+          "id": "9u0v1w2x3y4z5a6b",
+          "title": "Manejo da Crise Asmática",
+          "order": 4
+        }
+      ],
+      "driveDocs": [
+        {
+          "id": "7c8d9e0f1g2h3i4j",
+          "title": "Escalas de Tratamento",
+          "order": 1
+        }
+      ]
+    }
+  ]
+}

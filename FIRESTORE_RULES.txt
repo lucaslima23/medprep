@@ -1,0 +1,146 @@
+// ============================================
+// FIRESTORE SECURITY RULES - SCHEDULE MIGRATION
+// ============================================
+
+// INSTRUÇÃO: Cole estas regras no Firebase Console > Firestore > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // FUNÇÃO AUXILIAR: Verificar se é usuário autenticado
+    // ==========================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isUser(uid) {
+      return request.auth.uid == uid;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: users
+    // ==========================================
+    match /users/{uid} {
+      // Usuário pode ler seus próprios dados
+      allow read: if isUser(uid);
+      
+      // Usuário pode editar seus próprios dados
+      allow write: if isUser(uid);
+    }
+    
+    // ==========================================
+    // COLEÇÃO: meta_contents (Pública - Leitura)
+    // ==========================================
+    match /meta_contents/{document=**} {
+      // Qualquer usuário autenticado pode ler meta_contents
+      allow read: if isAuthenticated();
+      
+      // Apenas admins podem escrever (definir em custom claims)
+      allow write: if request.auth.token.admin == true;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: schedules
+    // ==========================================
+    match /schedules/{userId} {
+      // Usuário pode ler seu cronograma
+      allow read: if isUser(userId);
+      
+      // Sistema pode criar/atualizar cronogramas do usuário
+      allow write: if isUser(userId);
+    }
+    
+    // ==========================================
+    // COLEÇÃO: questions
+    // ==========================================
+    match /questions/{document=**} {
+      // Qualquer usuário autenticado pode ler questões
+      allow read: if isAuthenticated();
+      
+      // Apenas admins podem escrever
+      allow write: if request.auth.token.admin == true;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: flashcards
+    // ==========================================
+    match /flashcards/{document=**} {
+      // Qualquer usuário autenticado pode ler flashcards
+      allow read: if isAuthenticated();
+      
+      // Apenas admins podem escrever
+      allow write: if request.auth.token.admin == true;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: srs_data
+    // ==========================================
+    match /srs_data/{document=**} {
+      // Usuário pode ler seus próprios dados SRS
+      allow read: if request.resource.data.userId == request.auth.uid;
+      
+      // Usuário pode escrever seus próprios dados SRS
+      allow write: if resource.data.userId == request.auth.uid || 
+                      request.resource.data.userId == request.auth.uid;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: study_sessions
+    // ==========================================
+    match /study_sessions/{document=**} {
+      // Usuário pode ler suas próprias sessões
+      allow read: if request.resource.data.userId == request.auth.uid;
+      
+      // Usuário pode criar/atualizar suas sessões
+      allow write: if request.resource.data.userId == request.auth.uid;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: question_attempts
+    // ==========================================
+    match /question_attempts/{document=**} {
+      // Usuário pode ler suas tentativas
+      allow read: if resource.data.userId == request.auth.uid;
+      
+      // Usuário pode criar tentativas
+      allow create: if request.resource.data.userId == request.auth.uid;
+      
+      // Usuário não pode editar/deletar tentativas (são imutáveis)
+      allow update, delete: if false;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: simulados
+    // ==========================================
+    match /simulados/{document=**} {
+      // Qualquer usuário autenticado pode ler simulados
+      allow read: if isAuthenticated();
+      
+      // Apenas admins podem escrever
+      allow write: if request.auth.token.admin == true;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: simulado_results
+    // ==========================================
+    match /simulado_results/{document=**} {
+      // Usuário pode ler seus próprios resultados
+      allow read: if resource.data.userId == request.auth.uid;
+      
+      // Usuário pode criar seus resultados
+      allow create: if request.resource.data.userId == request.auth.uid;
+      
+      // Não permitir edição/exclusão de resultados
+      allow update, delete: if false;
+    }
+    
+    // ==========================================
+    // COLEÇÃO: Padrão - Negar Tudo
+    // ==========================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

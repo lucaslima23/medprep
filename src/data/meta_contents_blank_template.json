@@ -1,0 +1,94 @@
+{
+  "metaContentsBlank": [
+    {
+      "title": "Insuficiência Cardíaca Congestiva",
+      "subject": "clinica_medica",
+      "subSubject": "Cardiologia",
+      "order": 1,
+      "summary": "Nesta aula, abordaremos a fisiopatologia, classificação (NYHA), diagnóstico clínico e laboratorial, e tratamento da ICC. Foco especial nos critérios de Framingham e no uso de BNP/NT-proBNP como marcadores. Discutiremos também as principais causas de descompensação e o manejo hospitalar vs ambulatorial.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Abdome Agudo Inflamatório",
+      "subject": "cirurgia",
+      "subSubject": "Cirurgia Geral",
+      "order": 2,
+      "summary": "Estudo completo do abdome agudo inflamatório, com ênfase em apendicite aguda, colecistite e diverticulite. Diagnóstico diferencial, exames de imagem e indicações cirúrgicas. Revisão dos escores de Alvarado e Mantrels para apendicite.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Reanimação Neonatal",
+      "subject": "pediatria",
+      "subSubject": "Neonatologia",
+      "order": 3,
+      "summary": "Protocolo atualizado de reanimação neonatal conforme SBP/AAP. Passos iniciais, ventilação com pressão positiva, compressões torácicas e uso de medicações. Discussão sobre clampeamento do cordão e cuidados com o RN prematuro.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Pré-Eclâmpsia e Eclâmpsia",
+      "subject": "ginecologia",
+      "subSubject": "Obstetrícia",
+      "order": 4,
+      "summary": "Diagnóstico, classificação e manejo das síndromes hipertensivas da gestação. Critérios diagnósticos atualizados, uso de sulfato de magnésio, anti-hipertensivos e momento do parto. Síndrome HELLP e suas complicações.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Estudos Epidemiológicos",
+      "subject": "preventiva",
+      "subSubject": "Epidemiologia",
+      "order": 5,
+      "summary": "Revisão dos principais tipos de estudos epidemiológicos: coorte, caso-controle, transversal e ensaio clínico. Cálculo e interpretação de RR, OR, NNT. Vieses e fatores de confusão.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "DPOC - Doença Pulmonar Obstrutiva Crônica",
+      "subject": "clinica_medica",
+      "subSubject": "Pneumologia",
+      "order": 6,
+      "summary": "Fisiopatologia, diagnóstico espirométrico (GOLD), classificação de gravidade e fenótipos. Tratamento farmacológico escalonado, oxigenoterapia domiciliar e manejo das exacerbações. Indicações de VNI e internação em UTI.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "ATLS - Atendimento Inicial ao Politraumatizado",
+      "subject": "cirurgia",
+      "subSubject": "Trauma",
+      "order": 7,
+      "summary": "Protocolo ABCDE do trauma. Avaliação primária e secundária. Manejo de via aérea difícil, choque hemorrágico, trauma torácico e abdominal. Indicações de cirurgia de controle de danos.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Doenças Exantemáticas da Infância",
+      "subject": "pediatria",
+      "subSubject": "Infectologia Pediátrica",
+      "order": 8,
+      "summary": "Diagnóstico diferencial dos exantemas na infância: sarampo, rubéola, varicela, escarlatina, eritema infeccioso e exantema súbito. Características clínicas, complicações e medidas de isolamento.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Sangramento Uterino Anormal",
+      "subject": "ginecologia",
+      "subSubject": "Ginecologia",
+      "order": 9,
+      "summary": "Classificação PALM-COEIN, investigação diagnóstica por faixa etária, histeroscopia e ultrassonografia. Tratamento clínico vs cirúrgico. Miomas uterinos e adenomiose.",
+      "driveVideos": [],
+      "driveDocs": []
+    },
+    {
+      "title": "Sistema Único de Saúde - Princípios e Diretrizes",
+      "subject": "preventiva",
+      "subSubject": "Saúde Coletiva",
+      "order": 10,
+      "summary": "História do SUS, princípios doutrinários e organizativos. Níveis de atenção, regionalização e hierarquização. Financiamento, controle social e principais políticas de saúde.",
+      "driveVideos": [],
+      "driveDocs": []
+    }
+  ]
+}

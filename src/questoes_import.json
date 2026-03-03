@@ -1,0 +1,74 @@
+[
+  {
+    "text": "Pacientes com anovulação crônica podem apresentar acantose nigricans que está relacionada com:",
+    "options": [
+      "hiperprolactinemia",
+      "resistência periférica à insulina",
+      "hiperandrogenismo",
+      "hipogonadismo"
+    ],
+    "answer": 1,
+    "subject": "GINECOLOGIA",
+    "subSubject": "Síndrome dos Ovários Policísticos",
+    "explanation": "A presença de acantose nigricans (lesões hiperpigmentadas e aveludadas) está associada ao aumento da resistência periférica à insulina. Nesses casos, sua presença indica a necessidade de dosagem de insulina em jejum. Sinais de hiperandrogenismo como acne e hirsutismo são comuns, mas a acantose é marcador específico de resistência insulínica.",
+    "difficulty": "media"
+  },
+  {
+    "text": "Mulher, 30a, nuligesta, com queixa de sangramento menstrual aumentado há um ano, com ciclos menstruais regulares com duração de sete dias, desejando tratamento. Ultima menstruação há 10 dias. Método contraceptivo: preservativo masculino. Antecedente pessoal: enxaqueca com aura. Exame fisico: IMC 29Kg/m2; descorada 1+/4. Hb=9,5g/dL, Ht 28%. FSH, LH, TSH e prolactina normais. Ultrassonografia transvaginal: útero e ovários de tamanho e forma adequados para a idade, sem anormalidades. A TERAPIA HORMONAL INDICADA É:",
+    "options": [
+      "Contraceptivo oral combinado",
+      "Injetável mensal",
+      "Progestogenio isolado",
+      "Anel vaginal"
+    ],
+    "answer": 2,
+    "subject": "GINECOLOGIA",
+    "subSubject": "Planejamento Familiar",
+    "explanation": "O ponto chave é o relato de enxaqueca com aura, que corresponde a uma contraindicação absoluta (Categoria 4 da OMS) aos métodos combinados (estrogênio + progestagênio). Portanto, a terapia indicada deve ser com progestogênio isolado, que pode ser via oral, injetável trimestral, implante ou SIU de levonorgestrel.",
+    "difficulty": "media"
+  },
+  {
+    "text": "Uma das principais ações do FSH sobre as células da granulosa para a produção de estrogênio é induzir a atividade da enzima",
+    "options": [
+      "cicloxigenase",
+      "metiltransferase",
+      "aromatase",
+      "progesteronase",
+      "estradioliase"
+    ],
+    "answer": 2,
+    "subject": "GINECOLOGIA",
+    "subSubject": "Fisiologia do Ciclo Menstrual",
+    "explanation": "Pela teoria das 'duas células, duas gonadotrofinas', as células da teca (sob estímulo do LH) produzem androgênios, enquanto as células da granulosa expressam altos níveis da enzima aromatase em resposta ao FSH. Esta enzima é responsável por converter os androgênios em estrogênios (estradiol e estrona).",
+    "difficulty": "facil"
+  },
+  {
+    "text": "Um método de anticoncepção classificado como natural ou comportamental é o método do muco cervical ou de Billings. A respeito da fundamentação desse tipo de método, assinale a alternativa CORRETA.",
+    "options": [
+      "A progesterona produzida pela ovulação faz com que o muco cervical se torne abundante e facilmente perceptível pela paciente",
+      "A subida do LH transforma o muco, tomando-o abundante e transparente",
+      "A produção estrogênica aumentada faz o muco cervical ser abundante, que é máximo no período ovulatório. Depois, por ação da progesterona, ele diminui",
+      "O teste de Billings é o método da tabelinha associado à temperatura basal",
+      "O aumento do FSH, do LH, do estrogênio e da progesterona determina, por ação sincrônica, o aumento do muco cervical"
+    ],
+    "answer": 2,
+    "subject": "GINECOLOGIA",
+    "subSubject": "Planejamento Familiar",
+    "explanation": "O método Billings baseia-se na detecção das características do muco cervical. Sob estímulo estrogênico, o muco torna-se filante, aquoso, abundante e transparente (pico no período ovulatório). Após a ovulação, por ação da progesterona, o muco torna-se espesso, opaco e sem filância.",
+    "difficulty": "media"
+  },
+  {
+    "text": "Mulher, 23 anos, saudável, G1P1, com ciclo menstrual variando de 24-33 dias nos últimos 6 meses. O volume menstrual é normal e a duração do sangramento é de 4 a 5 dias. Após as orientações, ela optou pelo uso da tabelinha. Considerando que você usou o método do calendário (ou ritmo) para seus cálculos (Organização Mundial da Saúde, 2018), qual a alternativa contém o período do ciclo menstrual que essa mulher deverá fazer abstinência ou usar preservativo para evitar uma gravidez?",
+    "options": [
+      "7º ao 23º dia do ciclo",
+      "5º ao 24º dia do ciclo",
+      "8º ao 19º dia do ciclo",
+      "6º ao 22º dia do ciclo"
+    ],
+    "answer": 3,
+    "subject": "GINECOLOGIA",
+    "subSubject": "Planejamento Familiar",
+    "explanation": "Pelo método de Ogino-Knaus, subtrai-se 18 do ciclo mais curto e 11 do ciclo mais longo para definir o período fértil. No caso: 24 - 18 = 6 (início) e 33 - 11 = 22 (fim). Portanto, o período de abstinência deve ser do 6º ao 22º dia.",
+    "difficulty": "dificil"
+  }
+]

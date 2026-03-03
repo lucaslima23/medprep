@@ -1,0 +1,128 @@
+{
+  "id": "schedule_2025_01",
+  "name": "Cronograma ENAMED 2025",
+  "startDate": "2025-01-06",
+  "endDate": "2025-06-30",
+  "days": [
+    {
+      "date": "2025-02-05",
+      "subject": "clinica_medica",
+      "subSubject": "Cardiologia",
+      "title": "Insuficiência Cardíaca Congestiva",
+      "summary": "Nesta aula, abordaremos a fisiopatologia, classificação (NYHA), diagnóstico clínico e laboratorial, e tratamento da ICC. Foco especial nos critérios de Framingham e no uso de BNP/NT-proBNP como marcadores. Discutiremos também as principais causas de descompensação e o manejo hospitalar vs ambulatorial.",
+      "videoId": "1a2b3c4d5e6f7g8h9i0j",
+      "pdfId": "abc123def456ghi789",
+      "flashcardSetId": "fc_icc_001",
+      "questionSetId": "qs_cardio_icc",
+      "estimatedTime": 120
+    },
+    {
+      "date": "2025-02-06",
+      "subject": "cirurgia",
+      "subSubject": "Cirurgia Geral",
+      "title": "Abdome Agudo Inflamatório",
+      "summary": "Estudo completo do abdome agudo inflamatório, com ênfase em apendicite aguda, colecistite e diverticulite. Diagnóstico diferencial, exames de imagem e indicações cirúrgicas. Revisão dos escores de Alvarado e Mantrels para apendicite.",
+      "videoId": "2b3c4d5e6f7g8h9i0ja",
+      "pdfId": "def456ghi789jkl012",
+      "flashcardSetId": "fc_abdome_001",
+      "questionSetId": "qs_cir_abdome",
+      "estimatedTime": 90
+    },
+    {
+      "date": "2025-02-07",
+      "subject": "pediatria",
+      "subSubject": "Neonatologia",
+      "title": "Reanimação Neonatal",
+      "summary": "Protocolo atualizado de reanimação neonatal conforme SBP/AAP. Passos iniciais, ventilação com pressão positiva, compressões torácicas e uso de medicações. Discussão sobre clampeamento do cordão e cuidados com o RN prematuro.",
+      "videoId": "3c4d5e6f7g8h9i0jab1",
+      "pdfId": "ghi789jkl012mno345",
+      "flashcardSetId": "fc_reanimacao_001",
+      "questionSetId": "qs_ped_neo",
+      "estimatedTime": 75
+    },
+    {
+      "date": "2025-02-08",
+      "subject": "ginecologia",
+      "subSubject": "Obstetrícia",
+      "title": "Pré-Eclâmpsia e Eclâmpsia",
+      "summary": "Diagnóstico, classificação e manejo das síndromes hipertensivas da gestação. Critérios diagnósticos atualizados, uso de sulfato de magnésio, anti-hipertensivos e momento do parto. Síndrome HELLP e suas complicações.",
+      "videoId": "4d5e6f7g8h9i0jab2c",
+      "pdfId": "jkl012mno345pqr678",
+      "flashcardSetId": "fc_dheg_001",
+      "questionSetId": "qs_go_dheg",
+      "estimatedTime": 100
+    },
+    {
+      "date": "2025-02-10",
+      "subject": "preventiva",
+      "subSubject": "Epidemiologia",
+      "title": "Estudos Epidemiológicos",
+      "summary": "Revisão dos principais tipos de estudos epidemiológicos: coorte, caso-controle, transversal e ensaio clínico. Cálculo e interpretação de RR, OR, NNT. Vieses e fatores de confusão.",
+      "videoId": "5e6f7g8h9i0jab3cd4",
+      "pdfId": "mno345pqr678stu901",
+      "flashcardSetId": "fc_epi_001",
+      "questionSetId": "qs_prev_epi",
+      "estimatedTime": 60
+    },
+    {
+      "date": "2025-02-11",
+      "subject": "clinica_medica",
+      "subSubject": "Pneumologia",
+      "title": "DPOC - Doença Pulmonar Obstrutiva Crônica",
+      "summary": "Fisiopatologia, diagnóstico espirométrico (GOLD), classificação de gravidade e fenótipos. Tratamento farmacológico escalonado, oxigenoterapia domiciliar e manejo das exacerbações. Indicações de VNI e internação em UTI.",
+      "videoId": "6f7g8h9i0jab4cde5f",
+      "pdfId": "pqr678stu901vwx234",
+      "flashcardSetId": "fc_dpoc_001",
+      "questionSetId": "qs_pneumo_dpoc",
+      "estimatedTime": 90
+    },
+    {
+      "date": "2025-02-12",
+      "subject": "cirurgia",
+      "subSubject": "Trauma",
+      "title": "ATLS - Atendimento Inicial ao Politraumatizado",
+      "summary": "Protocolo ABCDE do trauma. Avaliação primária e secundária. Manejo de via aérea difícil, choque hemorrágico, trauma torácico e abdominal. Indicações de cirurgia de controle de danos.",
+      "videoId": "7g8h9i0jab5cdef6g",
+      "pdfId": "stu901vwx234yza567",
+      "flashcardSetId": "fc_atls_001",
+      "questionSetId": "qs_cir_trauma",
+      "estimatedTime": 120
+    },
+    {
+      "date": "2025-02-13",
+      "subject": "pediatria",
+      "subSubject": "Infectologia Pediátrica",
+      "title": "Doenças Exantemáticas da Infância",
+      "summary": "Diagnóstico diferencial dos exantemas na infância: sarampo, rubéola, varicela, escarlatina, eritema infeccioso e exantema súbito. Características clínicas, complicações e medidas de isolamento.",
+      "videoId": "8h9i0jab6cdefg7h8",
+      "pdfId": "vwx234yza567bcd890",
+      "flashcardSetId": "fc_exantema_001",
+      "questionSetId": "qs_ped_infecto",
+      "estimatedTime": 80
+    },
+    {
+      "date": "2025-02-14",
+      "subject": "ginecologia",
+      "subSubject": "Ginecologia",
+      "title": "Sangramento Uterino Anormal",
+      "summary": "Classificação PALM-COEIN, investigação diagnóstica por faixa etária, histeroscopia e ultrassonografia. Tratamento clínico vs cirúrgico. Miomas uterinos e adenomiose.",
+      "videoId": "9i0jab7cdefgh8i9j",
+      "pdfId": "yza567bcd890efg123",
+      "flashcardSetId": "fc_sua_001",
+      "questionSetId": "qs_go_sua",
+      "estimatedTime": 85
+    },
+    {
+      "date": "2025-02-15",
+      "subject": "preventiva",
+      "subSubject": "Saúde Coletiva",
+      "title": "Sistema Único de Saúde - Princípios e Diretrizes",
+      "summary": "História do SUS, princípios doutrinários e organizativos. Níveis de atenção, regionalização e hierarquização. Financiamento, controle social e principais políticas de saúde.",
+      "videoId": "0jab8cdefghi9j0ka",
+      "pdfId": "bcd890efg123hij456",
+      "flashcardSetId": "fc_sus_001",
+      "questionSetId": "qs_prev_sus",
+      "estimatedTime": 70
+    }
+  ]
+}

@@ -1,0 +1,273 @@
+/* ============================================
+   MEDPREP LMS - GLOBAL STYLES
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-secondary-900 text-secondary-100 antialiased;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-secondary-800;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-secondary-600 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-secondary-500;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary-500/30 text-white;
+  }
+
+  /* Focus Outline */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2 ring-offset-secondary-900;
+  }
+}
+
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+
+@layer components {
+  /* Glass Card Effect */
+  .glass-card {
+    @apply bg-secondary-800/30 backdrop-blur-xl border border-secondary-700/50 rounded-2xl;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-400 to-accent-cyan bg-clip-text text-transparent;
+  }
+
+  /* Glow Button */
+  .btn-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-glow::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-primary-500/0 via-primary-500/30 to-primary-500/0;
+    @apply -translate-x-full transition-transform duration-500;
+  }
+
+  .btn-glow:hover::before {
+    @apply translate-x-full;
+  }
+
+  /* Input Focus Animation */
+  .input-animated {
+    @apply relative;
+  }
+
+  .input-animated::after {
+    content: '';
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-primary-500;
+    @apply scale-x-0 origin-center transition-transform duration-300;
+  }
+
+  .input-animated:focus-within::after {
+    @apply scale-x-100;
+  }
+
+  /* Stat Card Hover */
+  .stat-card {
+    @apply transition-all duration-300;
+  }
+
+  .stat-card:hover {
+    @apply transform -translate-y-1 shadow-glow;
+  }
+
+  /* Navigation Link */
+  .nav-link {
+    @apply relative px-4 py-3 rounded-xl transition-all duration-200;
+  }
+
+  .nav-link::before {
+    content: '';
+    @apply absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 bg-primary-500 rounded-full;
+    @apply transition-all duration-200;
+  }
+
+  .nav-link.active::before {
+    @apply h-6;
+  }
+}
+
+/* ============================================
+   UTILITY STYLES
+   ============================================ */
+
+@layer utilities {
+  /* Hide Scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Text Balance */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Animation Delays */
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+}
+
+/* ============================================
+   RECHARTS CUSTOMIZATION
+   ============================================ */
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: #334155;
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-default-tooltip {
+  @apply !bg-secondary-800 !border-secondary-700 rounded-lg;
+}
+
+.recharts-tooltip-label {
+  @apply !text-secondary-300;
+}
+
+.recharts-tooltip-item {
+  @apply !text-secondary-200;
+}
+
+.recharts-legend-item-text {
+  @apply !text-secondary-400;
+}
+
+/* ============================================
+   FRAMER MOTION ANIMATIONS
+   ============================================ */
+
+/* Page Transition */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 200ms ease-in;
+}
+
+/* ============================================
+   RANGE INPUT STYLING
+   ============================================ */
+
+input[type='range'] {
+  @apply appearance-none bg-secondary-700 h-2 rounded-full;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 bg-primary-500 rounded-full cursor-pointer;
+  @apply shadow-glow transition-transform duration-200;
+}
+
+input[type='range']::-webkit-slider-thumb:hover {
+  @apply transform scale-110;
+}
+
+input[type='range']::-moz-range-thumb {
+  @apply w-4 h-4 bg-primary-500 rounded-full cursor-pointer border-none;
+  @apply shadow-glow;
+}
+
+/* ============================================
+   CHECKBOX STYLING
+   ============================================ */
+
+input[type='checkbox'] {
+  @apply appearance-none w-4 h-4 rounded bg-secondary-700 border border-secondary-600;
+  @apply checked:bg-primary-500 checked:border-primary-500;
+  @apply transition-colors duration-200 cursor-pointer;
+}
+
+input[type='checkbox']:checked {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ============================================
+   IFRAME EMBED STYLES
+   ============================================ */
+
+iframe {
+  @apply border-0;
+}
+
+/* Google Drive Embed Dark Mode Fix */
+.drive-embed-container {
+  @apply relative bg-secondary-800 rounded-xl overflow-hidden;
+}
+
+.drive-embed-container::before {
+  content: '';
+  @apply absolute inset-0 pointer-events-none;
+  @apply bg-gradient-to-b from-transparent to-secondary-900/20;
+}

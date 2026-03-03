@@ -1,0 +1,67 @@
+{
+  "name": "MedPrep - Preparação Residência Médica",
+  "short_name": "MedPrep",
+  "description": "Plataforma completa de estudos para residência médica ENAMED/ENARE com questões, simulados, flashcards e sistema SRS de revisão",
+  "start_url": "/",
+  "display": "standalone",
+  "scope": "/",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "categories": [
+    "education",
+    "medical",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Fazer Questões",
+      "short_name": "Questões",
+      "description": "Iniciar um bloco de questões",
+      "url": "/questoes",
+      "icons": [
+        {
+          "src": "/pwa-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Revisar com SRS",
+      "short_name": "Revisar",
+      "description": "Revisar itens com sistema SRS",
+      "url": "/flashcards",
+      "icons": [
+        {
+          "src": "/pwa-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
