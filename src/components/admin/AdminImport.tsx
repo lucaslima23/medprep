@@ -14,23 +14,31 @@ export function AdminImport() {
   const [jsonInput, setJsonInput] = useState('');
   const [enareInput, setEnareInput] = useState('');
   const [status, setStatus] = useState('');
-  const [stats, setStats] = useState<{ [key: string]: number }>({});
+  const [stats, setStats] = useState<{ [key: string]: { total: number, subs: { [sub: string]: number } } }>({});
   const [total, setTotal] = useState(0);
   const [reports, setReports] = useState<any[]>([]);
   const [editingQuestion, setEditingQuestion] = useState<any>(null);
+  const [expandedAreas, setExpandedAreas] = useState<{ [key: string]: boolean }>({});
 
   // 1. Carregar Estatísticas e Reports
   const carregarDados = async () => {
     try {
       // Carregar Questões para estatísticas
       const qSnapshot = await getDocs(collection(db, 'questions'));
-      const contagem: { [key: string]: number } = {};
+      const contagem: { [key: string]: { total: number, subs: { [sub: string]: number } } } = {};
       let totalCount = 0;
 
       qSnapshot.forEach((d) => {
         const data = d.data();
         const area = data.subject || 'indefinido';
-        contagem[area] = (contagem[area] || 0) + 1;
+        const sub = data.subSubject || 'Geral/Outros';
+
+        if (!contagem[area]) {
+          contagem[area] = { total: 0, subs: {} };
+        }
+        contagem[area].total++;
+        contagem[area].subs[sub] = (contagem[area].subs[sub] || 0) + 1;
+
         totalCount++;
       });
       setStats(contagem);
@@ -48,6 +56,10 @@ export function AdminImport() {
   useEffect(() => {
     carregarDados();
   }, []);
+
+  const toggleArea = (area: string) => {
+    setExpandedAreas(prev => ({ ...prev, [area]: !prev[area] }));
+  };
 
   // 2. Importar Lote de Questões
   const importarLote = async () => {
@@ -174,15 +186,33 @@ export function AdminImport() {
       <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>Painel Administrativo - MedPrep</h1>
 
       {/* DASHBOARD DE QUESTÕES */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '40px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '40px', alignItems: 'start' }}>
         <div style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', border: '2px solid #3b82f6', textAlign: 'center' }}>
           <span style={{ color: '#94a3b8', fontSize: '12px' }}>TOTAL GERAL</span>
           <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{total}</div>
         </div>
-        {Object.entries(stats).map(([area, count]) => (
-          <div key={area} style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', textAlign: 'center' }}>
+        {Object.entries(stats).map(([area, data]) => (
+          <div
+            key={area}
+            style={{ background: '#1e293b', padding: '20px', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', transition: 'all 0.2s' }}
+            onClick={() => toggleArea(area)}
+            onMouseOver={(e) => e.currentTarget.style.background = '#334155'}
+            onMouseOut={(e) => e.currentTarget.style.background = '#1e293b'}
+          >
             <span style={{ color: '#94a3b8', fontSize: '12px', textTransform: 'uppercase' }}>{area}</span>
-            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{count}</div>
+            <div style={{ fontSize: '24px', fontWeight: 'bold' }}>{data.total}</div>
+            <div style={{ fontSize: '12px', color: '#3b82f6', marginTop: '5px' }}>{expandedAreas[area] ? '▲ Ocultar Assuntos' : '▼ Ver Assuntos'}</div>
+
+            {expandedAreas[area] && (
+              <div style={{ marginTop: '15px', paddingTop: '15px', borderTop: '1px solid #334155', textAlign: 'left' }}>
+                {Object.entries(data.subs).sort((a, b) => b[1] - a[1]).map(([sub, count]) => (
+                  <div key={sub} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', padding: '4px 0', color: '#cbd5e1' }}>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '70%' }}>{sub}</span>
+                    <span style={{ fontWeight: 'bold', color: '#94a3b8' }}>{count}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
