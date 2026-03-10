@@ -117,6 +117,7 @@ export interface Flashcard {
   imageUrl?: string;
   tags: string[];
   createdAt: Date;
+  ankiNoteId?: string;       // ID do AnkiConnect para evitar duplicatas
 }
 
 // SRS (Spaced Repetition System) Types - SM-2 Algorithm
