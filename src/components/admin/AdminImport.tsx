@@ -4,6 +4,7 @@ import {
   collection,
   addDoc,
   getDocs,
+  getDoc,
   deleteDoc,
   doc,
   updateDoc,
@@ -52,7 +53,7 @@ export function AdminImport() {
       setTotal(totalCount);
 
       // Carregar Reports de erros
-      const rSnapshot = await getDocs(collection(db, 'question_reports'));
+      const rSnapshot = await getDocs(collection(db, 'questionReports'));
       setReports(rSnapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     } catch (error) {
       console.error("Erro ao carregar dados:", error);
@@ -218,20 +219,74 @@ export function AdminImport() {
     } catch (e) { setStatus("❌ Erro na limpeza."); }
   };
 
+  // Preparar Edição de Questão Reportada
+  const handleEditReportedQuestion = async (r: any) => {
+    try {
+      const qRef = doc(db, 'questions', r.questionId);
+      const qSnap = await getDoc(qRef);
+      if (qSnap.exists()) {
+        const questionData = qSnap.data();
+        setEditingQuestion({
+          ...r,
+          isFromReport: true,
+          questionStatement: questionData.statement,
+          explanation: questionData.explanation || '',
+          imageUrl: questionData.imageUrl || ''
+        });
+      } else {
+        alert("A questão original não foi encontrada.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao buscar a questão original.");
+    }
+  };
+
   // 4. Salvar Edição de Questão Reportada
   const salvarEdicao = async () => {
     if (!editingQuestion) return;
     try {
       const qRef = doc(db, 'questions', editingQuestion.questionId);
-      await updateDoc(qRef, {
+      const updateData: any = {
         statement: editingQuestion.questionStatement,
         explanation: editingQuestion.explanation
-      });
-      await deleteDoc(doc(db, 'question_reports', editingQuestion.id));
+      };
+
+      // Apenas adiciona imageUrl se houver valor, ou null/string vazia se quiser apagar.
+      if (editingQuestion.imageUrl !== undefined) {
+        updateData.imageUrl = editingQuestion.imageUrl;
+      }
+
+      await updateDoc(qRef, updateData);
+
+      if (editingQuestion.isFromReport) {
+        await deleteDoc(doc(db, 'questionReports', editingQuestion.id));
+      }
+
       setEditingQuestion(null);
       carregarDados();
       alert("Questão corrigida com sucesso!");
     } catch (e) { alert("Erro ao salvar edição."); }
+  };
+
+  // 5. Excluir Questão (Reportada ou Não)
+  const excluirQuestao = async () => {
+    if (!editingQuestion) return;
+    try {
+      const qRef = doc(db, 'questions', editingQuestion.questionId);
+      await deleteDoc(qRef);
+
+      if (editingQuestion.isFromReport) {
+        await deleteDoc(doc(db, 'questionReports', editingQuestion.id));
+      }
+
+      setEditingQuestion(null);
+      carregarDados();
+      alert("Questão excluída do sistema com sucesso!");
+    } catch (e) {
+      console.error(e);
+      alert("Erro ao excluir questão.");
+    }
   };
 
   return (
@@ -315,10 +370,10 @@ export function AdminImport() {
           reports.map(r => (
             <div key={r.id} style={{ background: '#1e293b', padding: '15px', borderRadius: '8px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <p style={{ margin: 0, fontSize: '14px' }}><strong>Motivo:</strong> {r.errorDescription || 'Não especificado'}</p>
+                <p style={{ margin: 0, fontSize: '14px' }}><strong>Motivo:</strong> {r.reason || r.errorDescription || 'Não especificado'}</p>
                 <p style={{ margin: '5px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>ID: {r.questionId}</p>
               </div>
-              <button onClick={() => setEditingQuestion(r)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer' }}>Corrigir</button>
+              <button onClick={() => handleEditReportedQuestion(r)} style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '8px 15px', borderRadius: '6px', cursor: 'pointer' }}>Corrigir</button>
             </div>
           ))
         )}
@@ -335,10 +390,20 @@ export function AdminImport() {
               value={editingQuestion.questionStatement || editingQuestion.statement}
               onChange={(e) => setEditingQuestion({ ...editingQuestion, questionStatement: e.target.value, statement: e.target.value })}
             />
+
+            <label style={{ fontSize: '12px', color: '#94a3b8' }}>URL da Imagem (opcional):</label>
+            <input
+              type="text"
+              placeholder="https://exemplo.com/imagem.png"
+              style={{ width: '100%', margin: '10px 0', borderRadius: '8px', padding: '10px', color: '#000' }}
+              value={editingQuestion.imageUrl || ''}
+              onChange={(e) => setEditingQuestion({ ...editingQuestion, imageUrl: e.target.value })}
+            />
+
             <label style={{ fontSize: '12px', color: '#94a3b8' }}>Explicação:</label>
             <textarea
               style={{ width: '100%', height: '100px', margin: '10px 0', borderRadius: '8px', padding: '10px', color: '#000' }}
-              value={editingQuestion.explanation}
+              value={editingQuestion.explanation || ''}
               onChange={(e) => setEditingQuestion({ ...editingQuestion, explanation: e.target.value })}
             />
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
@@ -348,9 +413,20 @@ export function AdminImport() {
                   // Refetch sub-subject if modal is open
                   if (viewingSubSubject) openSubSubject(viewingSubSubject.area, newSubSubjectName);
                 }}
-                style={{ background: '#10b981', color: '#fff', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
+                style={{ background: '#10b981', color: '#fff', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
               >
                 Salvar e Resolver
+              </button>
+              <button
+                onClick={async () => {
+                  if (confirm('Tem certeza que deseja EXCLUIR permanentemente esta questão?')) {
+                    await excluirQuestao();
+                    if (viewingSubSubject) openSubSubject(viewingSubSubject.area, newSubSubjectName);
+                  }
+                }}
+                style={{ background: '#ef4444', color: '#fff', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
+              >
+                Excluir Questão
               </button>
               <button onClick={() => setEditingQuestion(null)} style={{ background: '#64748b', color: '#fff', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Cancelar</button>
             </div>
@@ -407,7 +483,7 @@ export function AdminImport() {
                         <div style={{ display: 'flex', gap: '10px' }}>
                           <span style={{ fontSize: '12px', background: '#334155', padding: '4px 8px', borderRadius: '4px', textTransform: 'capitalize' }}>Diff: {q.difficulty}</span>
                           <button
-                            onClick={() => setEditingQuestion({ ...q, questionId: q.id, questionStatement: q.statement })}
+                            onClick={() => setEditingQuestion({ ...q, questionId: q.id, questionStatement: q.statement, imageUrl: q.imageUrl || '', isFromReport: false })}
                             style={{ background: '#3b82f6', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '4px', cursor: 'pointer', fontSize: '12px' }}
                           >
                             Editar ✎

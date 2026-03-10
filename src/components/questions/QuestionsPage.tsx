@@ -5,7 +5,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, Play, ChevronRight, Tag } from 'lucide-react';
+import { Filter, Play, ChevronRight, Tag, Target } from 'lucide-react';
 import { useStudy } from '../../contexts/StudyContext';
 import { questionService, auth, db } from '../../services/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -168,7 +168,10 @@ function FilterPanel({ filters, onFiltersChange, onStartSession, isOpen, onToggl
                   min="1"
                   max="100"
                   value={filters.quantity}
-                  onChange={(e) => onFiltersChange({ ...filters, quantity: parseInt(e.target.value) || 1 })}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    onFiltersChange({ ...filters, quantity: val === '' ? '' : parseInt(val) });
+                  }}
                   className="w-full px-3 py-2 bg-secondary-800 text-white rounded-lg text-sm border border-secondary-700 focus:border-primary-500 focus:outline-none transition-colors"
                 />
               </div>
@@ -185,14 +188,67 @@ function FilterPanel({ filters, onFiltersChange, onStartSession, isOpen, onToggl
   );
 }
 
+function ReviewSuggestionBox({ lowestSubs, onStartReview }: { lowestSubs: any[], onStartReview: (subs: string[]) => void }) {
+  if (lowestSubs.length === 0) return null;
+
+  return (
+    <Card className="p-4 bg-primary-900/10 border-primary-500/20">
+      <div className="flex items-center gap-2 mb-2">
+        <Target className="w-5 h-5 text-primary-500" />
+        <h3 className="font-semibold text-white">Sugestão de Revisão</h3>
+      </div>
+      <p className="text-sm text-secondary-400 mb-4">
+        Estes são os assuntos em que você apresenta maior dificuldade até o momento. Recomendamos revisá-los o quanto antes:
+      </p>
+
+      <div className="space-y-2 mb-4">
+        {lowestSubs.map((sub, idx) => (
+          <div key={idx} className="flex justify-between items-center bg-secondary-800/50 p-2 rounded border border-secondary-700/50">
+            <span className="text-secondary-200 text-sm font-medium">{sub.name}</span>
+            <Badge variant="danger" size="sm">{sub.accuracy.toFixed(1)}% acerto</Badge>
+          </div>
+        ))}
+      </div>
+
+      <Button onClick={() => onStartReview(lowestSubs.map(s => s.name))} className="w-full" variant="primary">
+        <Play className="w-4 h-4 mr-2" /> Iniciar Revisão (30 questões)
+      </Button>
+    </Card>
+  );
+}
+
 export function QuestionsPage() {
-  const { recentlyAnswered, refreshSRSData } = useStudy();
+  const { recentCorrect, recentIncorrect, refreshSRSData } = useStudy();
   const [searchParams] = useSearchParams();
   const initSubject = searchParams.get('subject') as MedicalSubject | null;
   const initSubSubject = searchParams.get('topic');
   const autoStartAttempted = useRef(false);
 
   const [filterOpen, setFilterOpen] = useState(!initSubject && !initSubSubject);
+  const [lowestAccuracySubs, setLowestAccuracySubs] = useState<{ name: string; accuracy: number }[]>([]);
+  const [loadingLowest, setLoadingLowest] = useState(false);
+
+  useEffect(() => {
+    const fetchLowest = async () => {
+      if (!auth.currentUser) return;
+      setLoadingLowest(true);
+      try {
+        const subs = await questionService.getLowestAccuracySubSubjects(auth.currentUser.uid);
+        setLowestAccuracySubs(subs);
+      } catch (e) {
+        console.error("Erro ao buscar sub-assuntos de menor acerto:", e);
+      } finally {
+        setLoadingLowest(false);
+      }
+    };
+
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      // Re-fetch when user object exists
+      if (user) fetchLowest();
+    });
+
+    return () => unsubscribe();
+  }, []);
   const [filters, setFilters] = useState<QuestionFilters>({
     subjects: initSubject && subjects.includes(initSubject) ? [initSubject] : [],
     subSubjects: initSubSubject ? [initSubSubject] : [],
@@ -216,21 +272,50 @@ export function QuestionsPage() {
 
     const activeFilters = overrideFilters || filters;
 
+    if (activeFilters.quantity === '' || activeFilters.quantity <= 0) {
+      alert("Por favor, informe uma quantidade válida de questões antes de iniciar.");
+      return;
+    }
+
     try {
       // O questionService deve estar preparado para receber subSubjects no filtro
       let fetched = await questionService.getQuestions({
         subjects: activeFilters.subjects.length > 0 ? activeFilters.subjects : undefined,
         subSubjects: activeFilters.subSubjects.length > 0 ? activeFilters.subSubjects : undefined,
-        limit: activeFilters.quantity * 3 // Busca mais para permitir o filtro de exclusão posterior
+        limit: (activeFilters.quantity as number) * 3 // Busca mais para permitir o filtro de exclusão posterior
       }) as Question[];
 
-      // Filtro manual para excluir questões respondidas recentemente (se ativado)
-      if (activeFilters.excludeRecent) {
-        fetched = fetched.filter(q => !recentlyAnswered.includes(q.id));
+      // Ponderação (Weighted Random Selection)
+      // Questões erradas recentemente: peso 5.0
+      // Questões novas: peso 1.0
+      // Questões acertadas recentemente: peso 0.1 (ou 0 se excludeRecent ativo)
+      const scoredQuestions = fetched.map(q => {
+        let weight = 1.0;
+
+        if (recentIncorrect.includes(q.id)) {
+          weight = 5.0;
+        } else if (recentCorrect.includes(q.id)) {
+          weight = activeFilters.excludeRecent ? 0.0 : 0.1;
+        }
+
+        // Atribui uma pontuação aleatória multiplicada pelo peso
+        return {
+          question: q,
+          score: Math.random() * weight
+        };
+      });
+
+      // Filtra as questões que tiveram peso 0 (excluídas)
+      let available = scoredQuestions.filter(sq => sq.score > 0);
+
+      // Fallback: se o filtro excludeRecent removeu TODAS as opções mas havia questões, 
+      // ignoramos a exclusão para evitar tela vazia
+      if (available.length === 0 && fetched.length > 0) {
+        available = fetched.map(q => ({ question: q, score: Math.random() }));
       }
 
-      // Embaralha e corta para a quantidade desejada
-      fetched = fetched.sort(() => Math.random() - 0.5).slice(0, filters.quantity);
+      // Ordena pelas maiores pontuações e corta para a quantidade
+      fetched = available.sort((a, b) => b.score - a.score).map(sq => sq.question).slice(0, activeFilters.quantity as number);
 
       if (fetched.length === 0) {
         alert("Nenhuma questão encontrada com esses filtros específicos.");
@@ -278,7 +363,8 @@ export function QuestionsPage() {
         selectedAnswer: selectedAnswer!,
         isCorrect,
         timeSpent: 0,
-        subject: q.subject
+        subject: q.subject,
+        subSubject: q.subSubject
       });
 
       if (currentIndex < questions.length - 1) {
@@ -302,13 +388,30 @@ export function QuestionsPage() {
       </motion.div>
 
       {!sessionActive ? (
-        <FilterPanel
-          filters={filters}
-          onFiltersChange={setFilters}
-          onStartSession={() => startSession()}
-          isOpen={filterOpen}
-          onToggle={() => setFilterOpen(!filterOpen)}
-        />
+        <div className="space-y-4">
+          <FilterPanel
+            filters={filters}
+            onFiltersChange={setFilters}
+            onStartSession={() => startSession()}
+            isOpen={filterOpen}
+            onToggle={() => setFilterOpen(!filterOpen)}
+          />
+
+          {!loadingLowest && lowestAccuracySubs.length > 0 && (
+            <ReviewSuggestionBox
+              lowestSubs={lowestAccuracySubs}
+              onStartReview={(subs) => {
+                const reviewFilters = {
+                  ...filters,
+                  subSubjects: subs,
+                  quantity: 30,
+                  subjects: []
+                };
+                startSession(reviewFilters);
+              }}
+            />
+          )}
+        </div>
       ) : sessionComplete ? (
         <SessionResults
           correct={sessionResults.correct}

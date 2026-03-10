@@ -234,7 +234,7 @@ export interface QuestionFilters {
   excludeRecent: boolean;    // excluir respondidas nos últimos 15 dias
   onlyWrong: boolean;        // apenas erradas anteriormente
   onlyNew: boolean;          // apenas não respondidas
-  quantity: number;
+  quantity: number | '';
 }
 
 // Component Props Types

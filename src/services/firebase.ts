@@ -80,6 +80,8 @@ export const collections = {
   simuladoResults: collection(db, 'simulado_results') as CollectionReference,
   schedules: collection(db, 'schedules') as CollectionReference,
   metaContents: collection(db, 'meta_contents') as CollectionReference,
+  questionReports: collection(db, 'questionReports') as CollectionReference,
+  settings: collection(db, 'settings') as CollectionReference,
 };
 
 export const userService = {
@@ -291,8 +293,8 @@ export const questionService = {
     return null;
   },
 
-  async getRecentlyAnswered(userId: string) {
-    if (!userId) return []; // PREVINE ERRO UNDEFINED
+  async getRecentAttemptStats(userId: string) {
+    if (!userId) return { recentCorrect: [], recentIncorrect: [] };
     const fifteenDaysAgo = new Date();
     fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
 
@@ -303,7 +305,31 @@ export const questionService = {
     );
 
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => doc.data().questionId);
+    const attempts = snapshot.docs.map(doc => doc.data());
+
+    // Sort descending by attemptedAt to get latest attempt first
+    attempts.sort((a, b) => {
+      const timeA = a.attemptedAt?.toMillis ? a.attemptedAt.toMillis() : 0;
+      const timeB = b.attemptedAt?.toMillis ? b.attemptedAt.toMillis() : 0;
+      return timeB - timeA;
+    });
+
+    const latestStatus = new Map<string, boolean>();
+    attempts.forEach(attempt => {
+      if (!latestStatus.has(attempt.questionId)) {
+        latestStatus.set(attempt.questionId, attempt.isCorrect);
+      }
+    });
+
+    const recentCorrect: string[] = [];
+    const recentIncorrect: string[] = [];
+
+    latestStatus.forEach((isCorrect, qId) => {
+      if (isCorrect) recentCorrect.push(qId);
+      else recentIncorrect.push(qId);
+    });
+
+    return { recentCorrect, recentIncorrect };
   },
 
   async saveAttempt(attempt: {
@@ -313,6 +339,7 @@ export const questionService = {
     isCorrect: boolean;
     timeSpent: number;
     subject: string; // Adicionado subject para o Dashboard de Desempenho
+    subSubject?: string;
   }) {
     const docRef = doc(collections.questionAttempts);
     await setDoc(docRef, {
@@ -320,6 +347,76 @@ export const questionService = {
       attemptedAt: Timestamp.now(),
     });
     return docRef.id;
+  },
+
+  async getLowestAccuracySubSubjects(userId: string) {
+    if (!userId) return [];
+
+    try {
+      // 1. Fetch recent attempts (limit to last 1000 to avoid excessive reads)
+      const q = query(
+        collections.questionAttempts,
+        where('userId', '==', userId),
+        orderBy('attemptedAt', 'desc'),
+        limit(1000)
+      );
+
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) return [];
+
+      const stats = new Map<string, { total: number; correct: number }>();
+
+      // We will do a lazy backfill of subSubject if it's missing
+      const attemptsToUpdate: any[] = [];
+
+      for (const docSnapshot of snapshot.docs) {
+        const data = docSnapshot.data();
+        let subSubject = data.subSubject;
+
+        // Lazy migration: if subSubject is missing, fetch from question
+        if (!subSubject && data.questionId) {
+          const qDoc = await getDoc(doc(db, 'questions', data.questionId));
+          if (qDoc.exists()) {
+            const qData = qDoc.data();
+            subSubject = qData.subSubject;
+            if (subSubject) {
+              attemptsToUpdate.push({ ref: docSnapshot.ref, subSubject });
+            }
+          }
+        }
+
+        if (subSubject) {
+          const key = String(subSubject).trim();
+          if (!stats.has(key)) {
+            stats.set(key, { total: 0, correct: 0 });
+          }
+          const s = stats.get(key)!;
+          s.total += 1;
+          if (data.isCorrect) s.correct += 1;
+        }
+      }
+
+      // Perform updates asynchronously without blocking
+      if (attemptsToUpdate.length > 0) {
+        Promise.all(attemptsToUpdate.map(update => updateDoc(update.ref, { subSubject: update.subSubject }))).catch(e => console.error("Lazy migration error:", e));
+      }
+
+      // Filter and sort stats
+      const results = Array.from(stats.entries())
+        .map(([name, data]) => ({
+          name,
+          total: data.total,
+          accuracy: (data.correct / data.total) * 100
+        }))
+        .filter(r => r.total >= 3) // Minimum 3 attempts to avoid noise
+        .sort((a, b) => a.accuracy - b.accuracy)
+        .slice(0, 3);
+
+      return results;
+    } catch (e) {
+      console.error("[getLowestAccuracySubSubjects] Error:", e);
+      return [];
+    }
   },
 };
 
@@ -580,8 +677,16 @@ export const scheduleService = {
       }
       startDate.setHours(0, 0, 0, 0);
 
-      // Data Final: 18 de outubro de 2026 (Data do ENARE)
-      const endDate = new Date(2026, 9, 18); // Outubro é mês 9
+      // Data Final: Busca da settings/general, Senao usa fallback 18 de outubro de 2026
+      let endDate = new Date(2026, 9, 18); // Outubro é mês 9
+      try {
+        const settingsDoc = await getDoc(doc(db, 'settings', 'general'));
+        if (settingsDoc.exists() && settingsDoc.data().examDate) {
+          endDate = new Date(settingsDoc.data().examDate);
+        }
+      } catch (err) {
+        console.warn('Error fetching custom examDate', err);
+      }
       endDate.setHours(0, 0, 0, 0);
 
       const businessDays = this.calculateBusinessDays(startDate, endDate);
@@ -757,6 +862,28 @@ export const scheduleService = {
       console.error('[PROGRESS] Erro ao salvar conclusão:', err);
     }
   },
+
+  /**
+   * Recalcula a trilha iterativamente para todos os usuários inscritos.
+   */
+  async recalculateAllSchedules() {
+    try {
+      console.log('[SCHEDULE] Recalculating all schedules...');
+      const usersSnapshot = await getDocs(collection(db, 'users'));
+      const promises = usersSnapshot.docs.map(async (userDoc) => {
+        try {
+          await this.generatePersonalizedSchedule(userDoc.id);
+        } catch (e) {
+          console.error(`Falha ao recalcular schedule para ${userDoc.id}`, e);
+        }
+      });
+      await Promise.all(promises);
+      return true;
+    } catch (e) {
+      console.error('[SCHEDULE] Falha geral no recálculo', e);
+      return false;
+    }
+  }
 };
 
 // ============================================
@@ -764,6 +891,33 @@ export const scheduleService = {
 // ============================================
 
 export const analyticsService = {
+  /**
+   * Obtém o mapa de questões reportadas para filtro.
+   */
+  async getReportedQuestionsMap(): Promise<Record<string, string[]>> {
+    try {
+      const snapshot = await getDocs(collections.questionReports);
+      const reportMap: Record<string, string[]> = {};
+
+      snapshot.docs.forEach(doc => {
+        const data = doc.data();
+        if (!data.questionId || !data.userId) return;
+
+        if (!reportMap[data.questionId]) {
+          reportMap[data.questionId] = [];
+        }
+        if (!reportMap[data.questionId].includes(data.userId)) {
+          reportMap[data.questionId].push(data.userId);
+        }
+      });
+
+      return reportMap;
+    } catch (err) {
+      console.error('[REPORTS] Error loading reports map:', err);
+      return {};
+    }
+  },
+
   /**
    * Obtém os Rankings Globais (Assiduidade e Taxa de Acerto) dos últimos X dias.
    * Em produção com larga escala, isso deve migrar para Cloud Functions.
@@ -782,6 +936,9 @@ export const analyticsService = {
 
       const snapshot = await getDocs(q);
 
+      // 1.2 Buscar mapa de reports para invalidar questões com >= 2 reports, ou do próprio usuário
+      const reportMap = await this.getReportedQuestionsMap();
+
       // userId => Stats
       type UserStatsMap = {
         [userId: string]: {
@@ -795,8 +952,19 @@ export const analyticsService = {
       snapshot.docs.forEach(doc => {
         const data = doc.data();
         const userId = data.userId;
+        const questionId = data.questionId;
         const isCorrect = data.isCorrect;
         const subject = data.subject || 'geral';
+
+        // LÓGICA DE OCULTAÇÃO (REPORTES)
+        if (questionId && reportMap[questionId]) {
+          const reporterIds = reportMap[questionId];
+          // Regra 1: Se 2 ou mais usuários reportaram, anula para todos
+          // Regra 2: Se esse usuário reportou, anula para ele
+          if (reporterIds.length >= 2 || reporterIds.includes(userId)) {
+            return; // Desconsidera essa tentativa
+          }
+        }
 
         if (!userStats[userId]) {
           userStats[userId] = { totalAnswers: 0, correctAnswers: 0, subjects: {} };
@@ -926,6 +1094,9 @@ export const sessionService = {
         return [];
       }
 
+      // 1. Pegar histórico de reports
+      const reportMap = await analyticsService.getReportedQuestionsMap();
+
       // Agora tenta com o filtro de data
       const q = query(
         collections.questionAttempts,
@@ -942,6 +1113,15 @@ export const sessionService = {
 
       snapshot.docs.forEach(doc => {
         const data = doc.data();
+        const questionId = data.questionId;
+
+        // LÓGICA DE OCULTAÇÃO (REPORTES)
+        if (questionId && reportMap[questionId]) {
+          const reporterIds = reportMap[questionId];
+          if (reporterIds.length >= 2 || reporterIds.includes(userId)) {
+            return; // ignora a estatistica dessa tentativa na session
+          }
+        }
 
         // Garantir que attemptedAt é um Timestamp
         const attemptedAtTimestamp = data.attemptedAt || Timestamp.now();
@@ -980,6 +1160,32 @@ export const sessionService = {
     } catch (error) {
       console.error('[SESSION] Error in getUserSessions:', error);
       return [];
+    }
+  }
+};
+
+export const adminService = {
+  async getGeneralSettings() {
+    try {
+      const docRef = doc(db, 'settings', 'general');
+      const snapshot = await getDoc(docRef);
+      if (snapshot.exists()) {
+        return snapshot.data();
+      }
+      return null;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+  },
+  async updateGeneralSettings(settings: any) {
+    try {
+      const docRef = doc(db, 'settings', 'general');
+      await setDoc(docRef, settings, { merge: true });
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
     }
   }
 };

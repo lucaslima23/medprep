@@ -14,13 +14,18 @@ import {
     GripVertical
 } from 'lucide-react';
 import { Card, Button, Input } from '../common';
-import { scheduleService } from '../../services/firebase';
+import { scheduleService, adminService } from '../../services/firebase';
 import { SUBJECT_LABELS, MedicalSubject } from '../../types';
 import { clsx } from 'clsx';
 
 export function ScheduleEditorPage() {
     const [contents, setContents] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // Settings State
+    const [examDate, setExamDate] = useState<string>('');
+    const [isSavingDate, setIsSavingDate] = useState(false);
+    const [dateMsg, setDateMsg] = useState({ text: '', type: '' });
 
     // Form State
     const [selectedItem, setSelectedItem] = useState<any | null>(null);
@@ -51,9 +56,37 @@ export function ScheduleEditorPage() {
         }
     };
 
+    const loadSettings = async () => {
+        const settings = await adminService.getGeneralSettings();
+        if (settings && settings.examDate) {
+            setExamDate(settings.examDate);
+        } else {
+            setExamDate('2026-10-18');
+        }
+    };
+
     useEffect(() => {
         loadContents();
+        loadSettings();
     }, []);
+
+    const handleSaveDate = async () => {
+        if (!examDate) return;
+        setIsSavingDate(true);
+        setDateMsg({ text: 'Salvando e recalculando todos os cronogramas...', type: 'info' });
+
+        try {
+            await adminService.updateGeneralSettings({ examDate });
+            await scheduleService.recalculateAllSchedules();
+            setDateMsg({ text: 'Data salva e trilhas recalculadas!', type: 'success' });
+            setTimeout(() => setDateMsg({ text: '', type: '' }), 4000);
+        } catch (err) {
+            console.error(err);
+            setDateMsg({ text: 'Erro ao salvar a data da prova.', type: 'error' });
+        } finally {
+            setIsSavingDate(false);
+        }
+    };
 
     const handleSelectItem = (item: any) => {
         setSelectedItem(item);
@@ -202,6 +235,36 @@ export function ScheduleEditorPage() {
                     Crie, edite e reorganize os tópicos, vídeo-aulas e PDFs da Trilha ENARE.
                 </p>
             </div>
+
+            {/* CONFIGURAÇÕES GERAIS DA TRILHA */}
+            <Card className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-6 border-l-4 border-l-primary-500">
+                <div>
+                    <h3 className="text-lg font-semibold text-secondary-100 flex items-center gap-2">
+                        Data da Prova Alvo <span className="bg-primary-500 text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded">Global</span>
+                    </h3>
+                    <p className="text-sm text-secondary-400 mt-1 max-w-xl">
+                        Esta é a data oficial do exame. Todos os tópicos da trilha serão distribuídos de forma homogênea entre hoje e a data limite para cada usuário ativo da plataforma.
+                    </p>
+                </div>
+                <div className="flex flex-col gap-2">
+                    <div className="flex flex-col sm:flex-row items-center gap-3">
+                        <input
+                            type="date"
+                            value={examDate}
+                            onChange={(e) => setExamDate(e.target.value)}
+                            className="bg-secondary-900 border border-secondary-700 text-secondary-100 rounded-lg px-4 py-2 focus:ring-primary-500 focus:border-primary-500 min-w-[150px]"
+                        />
+                        <Button variant="primary" onClick={handleSaveDate} disabled={isSavingDate} className="whitespace-nowrap w-full sm:w-auto">
+                            {isSavingDate ? 'Recalculando trilhas...' : 'Salvar Data & Recalcular'}
+                        </Button>
+                    </div>
+                    {dateMsg.text && (
+                        <p className={clsx("text-sm text-center md:text-right font-medium", dateMsg.type === 'error' ? "text-accent-rose" : dateMsg.type === 'success' ? "text-accent-emerald" : "text-primary-400")}>
+                            {dateMsg.text}
+                        </p>
+                    )}
+                </div>
+            </Card>
 
             <div className="grid lg:grid-cols-3 gap-6">
 

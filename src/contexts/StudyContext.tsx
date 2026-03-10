@@ -23,7 +23,8 @@ interface StudyContextType {
   dueFlashcards: SRSData[];
   dueQuestions: SRSData[];
   srsStats: any;
-  recentlyAnswered: string[];
+  recentCorrect: string[];
+  recentIncorrect: string[];
   refreshSchedule: () => Promise<void>;
   refreshSRSData: () => Promise<void>;
   getStudyDayForDate: (date: string) => StudyDay | null;
@@ -39,7 +40,8 @@ export function StudyProvider({ children }: { children: ReactNode }) {
   const [dueFlashcards, setDueFlashcards] = useState<SRSData[]>([]);
   const [dueQuestions, setDueQuestions] = useState<SRSData[]>([]);
   const [srsStats, setSrsStats] = useState(calculateSRSStats([]));
-  const [recentlyAnswered, setRecentlyAnswered] = useState<string[]>([]);
+  const [recentCorrect, setRecentCorrect] = useState<string[]>([]);
+  const [recentIncorrect, setRecentIncorrect] = useState<string[]>([]);
 
   const refreshSchedule = useCallback(async () => {
     if (!user?.uid) return;
@@ -96,8 +98,9 @@ export function StudyProvider({ children }: { children: ReactNode }) {
       setDueQuestions(questions as SRSData[]);
       const allItems = [...flashcards, ...questions] as SRSData[];
       setSrsStats(calculateSRSStats(allItems));
-      const recent = await questionService.getRecentlyAnswered(user.uid);
-      setRecentlyAnswered(recent);
+      const stats = await questionService.getRecentAttemptStats(user.uid);
+      setRecentCorrect(stats.recentCorrect);
+      setRecentIncorrect(stats.recentIncorrect);
     } catch (err) {
       console.error('Erro ao carregar dados SRS:', err);
     }
@@ -122,7 +125,7 @@ export function StudyProvider({ children }: { children: ReactNode }) {
   }, [schedule]);
 
   return (
-    <StudyContext.Provider value={{ schedule, todayStudyDay, loading, dueFlashcards, dueQuestions, srsStats, recentlyAnswered, refreshSchedule, refreshSRSData, getStudyDayForDate }}>
+    <StudyContext.Provider value={{ schedule, todayStudyDay, loading, dueFlashcards, dueQuestions, srsStats, recentCorrect, recentIncorrect, refreshSchedule, refreshSRSData, getStudyDayForDate }}>
       {children}
     </StudyContext.Provider>
   );

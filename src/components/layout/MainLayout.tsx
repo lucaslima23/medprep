@@ -89,7 +89,7 @@ export function MainLayout() {
     { to: '/dashboard', icon: <Calendar className="w-5 h-5" />, label: 'Agenda', badge: undefined },
     { to: '/questoes', icon: <ClipboardList className="w-5 h-5" />, label: 'Questões', badge: undefined },
     { to: '/flashcards', icon: <BrainCircuit className="w-5 h-5" />, label: 'Flashcards', badge: srsStats.dueToday },
-    { to: '/revisao', icon: <BookOpen className="w-5 h-5" />, label: 'Revisão SRS', badge: srsStats.dueToday },
+    { to: '/revisao', icon: <BookOpen className="w-5 h-5" />, label: 'Material de estudo', badge: srsStats.dueToday },
     { to: '/simulado', icon: <Trophy className="w-5 h-5" />, label: 'Super Simu', badge: undefined },
     { to: '/desempenho', icon: <BarChart3 className="w-5 h-5" />, label: 'Desempenho', badge: undefined },
   ];

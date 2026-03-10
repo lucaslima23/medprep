@@ -31,6 +31,15 @@ service cloud.firestore {
     }
     
     // ==========================================
+    // COLEÇÃO: settings (Configurações Globais)
+    // ==========================================
+    match /settings/{document=**} {
+      allow read: if isAuthenticated();
+      // Apenas admins podem alterar configuracoes globais
+      allow write: if request.auth.token.admin == true;
+    }
+    
+    // ==========================================
     // COLEÇÃO: meta_contents (Pública - Leitura)
     // ==========================================
     match /meta_contents/{document=**} {
