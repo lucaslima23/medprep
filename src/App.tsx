@@ -10,6 +10,7 @@ import { LoadingScreen } from './components/common';
 import { AdminImport } from './components/admin/AdminImport';
 import { ScheduleEditorPage } from './components/admin/ScheduleEditorPage';
 import { UsersManagerPage } from './components/admin/UsersManagerPage';
+import { AdminFlashcards } from './components/admin/AdminFlashcards';
 export function RouteChangeTracker() {
   const { pathname } = useLocation();
 
@@ -31,15 +32,7 @@ const QuestionsPage = lazy(() => import('./components/questions/QuestionsPage'))
 const AnalyticsPage = lazy(() => import('./components/analytics/AnalyticsPage'));
 const SimuladoPage = lazy(() => import('./components/simulado/SimuladoPage'));
 
-// Placeholder pages (to be implemented)
-const FlashcardsPage = lazy(() => Promise.resolve({
-  default: () => (
-    <div className="text-center py-12">
-      <h1 className="text-2xl font-bold text-white mb-4">Flashcards</h1>
-      <p className="text-secondary-400">Em desenvolvimento...</p>
-    </div>
-  )
-}));
+const FlashcardsPage = lazy(() => import('./components/flashcards/FlashcardsPage'));
 
 const ReviewPage = lazy(() => import('./components/review/ReviewPage'));
 
@@ -142,6 +135,11 @@ function AppRoutes() {
           <Route path="/admin/schedule-editor" element={
             <AdminRoute>
               <ScheduleEditorPage />
+            </AdminRoute>
+          } />
+          <Route path="/admin/flashcards" element={
+            <AdminRoute>
+              <AdminFlashcards />
             </AdminRoute>
           } />
           <Route path="/admin/users" element={

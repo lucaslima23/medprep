@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { db } from '../../services/firebase';
-import { MedicalSubject, SUBJECT_LABELS } from '../../types';
 import {
   collection,
   addDoc,
@@ -28,13 +27,6 @@ export function AdminImport() {
   const [viewingSubSubject, setViewingSubSubject] = useState<{ area: string, sub: string, questions: any[] } | null>(null);
   const [newSubSubjectName, setNewSubSubjectName] = useState('');
   const [isLoadingSub, setIsLoadingSub] = useState(false);
-
-  // States for AnkiConnect Sync
-  const [ankiDeckName, setAnkiDeckName] = useState('');
-  const [ankiSubject, setAnkiSubject] = useState<MedicalSubject>('clinica_medica');
-  const [ankiSubSubject, setAnkiSubSubject] = useState('');
-  const [ankiStatus, setAnkiStatus] = useState('');
-  const subjects: MedicalSubject[] = Object.keys(SUBJECT_LABELS) as MedicalSubject[];
 
   // 1. Carregar Estatísticas e Reports
   const carregarDados = async () => {
@@ -205,129 +197,6 @@ export function AdminImport() {
     }
   };
 
-  // 3.5 Importar via AnkiConnect
-  const invokeAnkiConnect = async (action: string, params: any = {}) => {
-    try {
-      const response = await fetch('http://localhost:8765', {
-        method: 'POST',
-        body: JSON.stringify({ action, version: 6, params }),
-      });
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-      return data.result;
-    } catch (e: any) {
-      throw new Error(`Falha no AnkiConnect (${action}): ` + e.message);
-    }
-  };
-
-  const syncAnkiToFirebase = async () => {
-    if (!ankiDeckName.trim()) {
-      setAnkiStatus("❌ Digite o nome do baralho.");
-      return;
-    }
-
-    try {
-      setAnkiStatus("⏳ Conectando ao Anki (localhost:8765)...");
-      const deckNames = await invokeAnkiConnect('deckNames');
-      if (!deckNames.includes(ankiDeckName)) {
-        setAnkiStatus(`❌ Baralho "${ankiDeckName}" não encontrado no Anki aberto.`);
-        return;
-      }
-
-      setAnkiStatus(`⏳ Buscando notas do baralho "${ankiDeckName}"...`);
-      const noteIds = await invokeAnkiConnect('findNotes', { query: `deck:"${ankiDeckName}"` });
-      if (!noteIds || noteIds.length === 0) {
-        setAnkiStatus("❌ Nenhuma nota encontrada neste baralho.");
-        return;
-      }
-
-      setAnkiStatus(`⏳ Baixando informações de ${noteIds.length} notas...`);
-      const notes = await invokeAnkiConnect('notesInfo', { notes: noteIds });
-
-      let newCount = 0;
-      let dupCount = 0;
-      setAnkiStatus(`⏳ Sincronizando com o Firebase...`);
-
-      // Busca cartões existentes na base que possuem ankiNoteId (para não duplicar)
-      // Limitando busca ou usando queries simples para não engasgar. Como não tem 1 milhão de flashcards, um getDocs resolve.
-      const flashcardsSnap = await getDocs(query(collection(db, 'flashcards')));
-      const existingAnkiIds = new Set(flashcardsSnap.docs.map(d => d.data().ankiNoteId).filter(Boolean));
-
-      let batch = writeBatch(db);
-      let operationsInBatch = 0;
-
-      for (let i = 0; i < notes.length; i++) {
-        const note = notes[i];
-        const noteIdStr = String(note.noteId);
-
-        if (existingAnkiIds.has(noteIdStr)) {
-          dupCount++;
-          continue;
-        }
-
-        let front = note.fields.Front?.value || note.fields.Text?.value || '';
-        let back = note.fields.Back?.value || note.fields.Extra?.value || '';
-
-        // Extract <img src="..."> tags
-        const replaceMedia = async (htmlContent: string) => {
-          let updatedHtml = htmlContent;
-
-          // Extrai todas as ocorrências iterando sobre matchAll (imgRegex with g flag is tricky with async, we find all first)
-          const matches = [...htmlContent.matchAll(/<img.*?src=["']([^"']+)["'].*?>/gi)];
-
-          for (const match of matches) {
-            const filename = match[1];
-            if (!filename.startsWith('data:')) {
-              try {
-                const base64Str = await invokeAnkiConnect('retrieveMediaFile', { filename });
-                if (base64Str) {
-                  const ext = filename.split('.').pop()?.toLowerCase() || 'png';
-                  const mime = (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
-                  const dataUrl = `data:${mime};base64,${base64Str}`;
-                  updatedHtml = updatedHtml.replace(match[0], `<img src="${dataUrl}">`);
-                }
-              } catch (err) {
-                console.warn("Failed to get media for", filename, err);
-              }
-            }
-          }
-          return updatedHtml;
-        };
-
-        front = await replaceMedia(front);
-        back = await replaceMedia(back);
-
-        const cardRef = doc(collection(db, 'flashcards'));
-        batch.set(cardRef, {
-          subject: ankiSubject,
-          subSubject: ankiSubSubject || '',
-          front,
-          back,
-          tags: note.tags || [],
-          ankiNoteId: noteIdStr,
-          createdAt: new Date().toISOString()
-        });
-
-        newCount++;
-        operationsInBatch++;
-
-        if (operationsInBatch >= 400 || i === notes.length - 1) {
-          if (operationsInBatch > 0) {
-            setAnkiStatus(`⏳ Salvando lote... (${i + 1}/${notes.length})`);
-            await batch.commit();
-            batch = writeBatch(db);
-            operationsInBatch = 0;
-          }
-        }
-      }
-
-      setAnkiStatus(`✅ Sincronização concluída! ${newCount} flashcards importados, ${dupCount} ignorados (já existiam).`);
-    } catch (e: any) {
-      console.error(e);
-      setAnkiStatus(`❌ Erro: ${e.message}. Certifique-se de que o plugin AnkiConnect está instalado no Anki aberto, e os domínios locais estão autorizados nas permissões.`);
-    }
-  };
-
   // 4. Remover Duplicatas
   const removerDuplicatas = async () => {
     try {
@@ -492,55 +361,6 @@ export function AdminImport() {
         <div style={{ display: 'flex', gap: '10px' }}>
           <button onClick={seedTrilhaEnare} style={{ background: '#f59e0b', color: '#000', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>♻️ Resetar & Importar Trilha Enare</button>
         </div>
-      </div>
-
-      {/* IMPORTADOR ANKICONNECT */}
-      <div style={{ background: '#0f172a', padding: '25px', borderRadius: '15px', marginBottom: '40px', border: '1px solid #3b82f6' }}>
-        <h2 style={{ fontSize: '18px', marginBottom: '15px', color: '#60a5fa' }}>🔄 Sincronizar AnkiConnect (Flashcards)</h2>
-        <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '15px' }}>
-          O Anki deve estar aberto no seu computador e com o plugin AnkiConnect instalado (porta 8765), aceitando conexões de localhost. O sistema baixará todas as cartas do baralho informado e integrará as imagens Base64 diretamente ao banco. Pule duplicados automaticamente na segunda execução.
-        </p>
-
-        <div style={{ display: 'flex', gap: '15px', marginBottom: '15px', flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: '200px' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '5px' }}>Nome do Baralho (exato):</label>
-            <input
-              type="text"
-              value={ankiDeckName}
-              onChange={(e) => setAnkiDeckName(e.target.value)}
-              placeholder='Ex: Ginecologia - Bloco 1'
-              style={{ width: '100%', borderRadius: '8px', padding: '10px', color: '#000' }}
-            />
-          </div>
-          <div style={{ flex: 1, minWidth: '150px' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '5px' }}>Assunto (Disciplina):</label>
-            <select
-              value={ankiSubject}
-              onChange={(e) => setAnkiSubject(e.target.value as MedicalSubject)}
-              style={{ width: '100%', borderRadius: '8px', padding: '10px', color: '#000' }}
-            >
-              {subjects.map(s => <option key={s} value={s}>{SUBJECT_LABELS[s]}</option>)}
-            </select>
-          </div>
-          <div style={{ flex: 1, minWidth: '200px' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '5px' }}>Sub-assunto:</label>
-            <input
-              type="text"
-              value={ankiSubSubject}
-              onChange={(e) => setAnkiSubSubject(e.target.value)}
-              placeholder='Ex: Ciclo Menstrual'
-              style={{ width: '100%', borderRadius: '8px', padding: '10px', color: '#000' }}
-            />
-          </div>
-        </div>
-
-        <button
-          onClick={syncAnkiToFirebase}
-          style={{ background: '#3b82f6', color: '#fff', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          Iniciar Sincronização de Flashcards
-        </button>
-        {ankiStatus && <p style={{ marginTop: '15px', color: '#60a5fa', fontWeight: '500' }}>{ankiStatus}</p>}
       </div>
 
       {/* GESTÃO DE REPORTS */}

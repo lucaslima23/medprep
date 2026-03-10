@@ -88,8 +88,8 @@ export function MainLayout() {
     { to: '/rankings', icon: <Medal className="w-5 h-5" />, label: 'Rankings', badge: undefined },
     { to: '/dashboard', icon: <Calendar className="w-5 h-5" />, label: 'Agenda', badge: undefined },
     { to: '/questoes', icon: <ClipboardList className="w-5 h-5" />, label: 'Questões', badge: undefined },
-    { to: '/flashcards', icon: <BrainCircuit className="w-5 h-5" />, label: 'Flashcards', badge: srsStats.dueToday },
-    { to: '/revisao', icon: <BookOpen className="w-5 h-5" />, label: 'Material de estudo', badge: srsStats.dueToday },
+    { to: '/flashcards', icon: <BrainCircuit className="w-5 h-5" />, label: 'Flashcards', badge: undefined },
+    { to: '/revisao', icon: <BookOpen className="w-5 h-5" />, label: 'Revisão Espaçada', badge: srsStats.dueToday },
     { to: '/simulado', icon: <Trophy className="w-5 h-5" />, label: 'Super Simu', badge: undefined },
     { to: '/desempenho', icon: <BarChart3 className="w-5 h-5" />, label: 'Desempenho', badge: undefined },
   ];
@@ -132,7 +132,7 @@ export function MainLayout() {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
           {navItems.filter(item => {
-            if (user?.role === 'student' && (item.to === '/dashboard' || item.to === '/revisao')) {
+            if (user?.role === 'student' && (item.to === '/dashboard' || item.to === '/revisao' || item.to === '/flashcards' || item.to === '/questoes')) {
               return false;
             }
             return true;
@@ -170,6 +170,12 @@ export function MainLayout() {
                   to="/admin-import"
                   icon={<Database className="w-5 h-5 text-accent-amber" />}
                   label=" Questões"
+                  onClick={closeSidebar}
+                />
+                <NavItem
+                  to="/admin/flashcards"
+                  icon={<BrainCircuit className="w-5 h-5 text-accent-purple" />}
+                  label="Flashcards Editor"
                   onClick={closeSidebar}
                 />
               </div>

@@ -13,7 +13,7 @@ import {
 } from 'react';
 import { useAuth } from './AuthContext';
 import { scheduleService, srsService, questionService } from '../services/firebase';
-import { StudySchedule, StudyDay, SRSData } from '../types';
+import { StudySchedule, StudyDay, SRSData, SRSQuality } from '../types';
 import { calculateSRSStats } from '../utils/srsAlgorithm';
 
 interface StudyContextType {
@@ -28,6 +28,7 @@ interface StudyContextType {
   refreshSchedule: () => Promise<void>;
   refreshSRSData: () => Promise<void>;
   getStudyDayForDate: (date: string) => StudyDay | null;
+  saveSRSReview: (itemId: string, itemType: 'question' | 'flashcard', quality: SRSQuality) => Promise<void>;
 }
 
 const StudyContext = createContext<StudyContextType | undefined>(undefined);
@@ -124,8 +125,33 @@ export function StudyProvider({ children }: { children: ReactNode }) {
     return schedule.days?.find(d => d.date === date) || null;
   }, [schedule]);
 
+  const saveSRSReview = useCallback(async (itemId: string, itemType: 'question' | 'flashcard', quality: SRSQuality) => {
+    if (!user?.uid) return;
+    try {
+      await srsService.processReview(user.uid, itemId, itemType, quality);
+      // Opcional: recarregar as estatísticas em background
+      refreshSRSData();
+    } catch (err) {
+      console.error('Erro ao salvar revisão SRS:', err);
+      throw err;
+    }
+  }, [user?.uid, refreshSRSData]);
+
   return (
-    <StudyContext.Provider value={{ schedule, todayStudyDay, loading, dueFlashcards, dueQuestions, srsStats, recentCorrect, recentIncorrect, refreshSchedule, refreshSRSData, getStudyDayForDate }}>
+    <StudyContext.Provider value={{
+      schedule,
+      todayStudyDay,
+      loading,
+      dueFlashcards,
+      dueQuestions,
+      srsStats,
+      recentCorrect,
+      recentIncorrect,
+      refreshSchedule,
+      refreshSRSData,
+      getStudyDayForDate,
+      saveSRSReview
+    }}>
       {children}
     </StudyContext.Provider>
   );

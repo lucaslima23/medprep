@@ -437,13 +437,74 @@ export const srsService = {
     return null;
   },
 
-  async updateSRSData(data: any) {
-    if (!data.userId || !data.id) return;
-    const docId = `${data.userId}_${data.itemType}_${data.id}`;
+  async processReview(userId: string, itemId: string, itemType: 'question' | 'flashcard', quality: number) {
+    if (!userId || !itemId) return;
+
+    // Recupera os dados atuais do SRS para o item, se houver
+    let srsData: any = await this.getSRSData(userId, itemId, itemType);
+
+    // SM-2 Default Parameters
+    let interval = 1;
+    let repetitions = 0;
+    let easeFactor = 2.5;
+    let totalReviews = 0;
+    let correctReviews = 0;
+    let streak = 0;
+    let bestStreak = 0;
+
+    if (srsData) {
+      interval = srsData.interval || 1;
+      repetitions = srsData.repetitions || 0;
+      easeFactor = srsData.easeFactor || 2.5;
+      totalReviews = srsData.totalReviews || 0;
+      correctReviews = srsData.correctReviews || 0;
+      streak = srsData.streak || 0;
+      bestStreak = srsData.bestStreak || 0;
+    }
+
+    // Calcula Acerto x Erro (Quality 0-2 = fail, 3-5 = pass)
+    totalReviews += 1;
+    if (quality >= 3) {
+      correctReviews += 1;
+      streak += 1;
+      if (streak > bestStreak) bestStreak = streak;
+
+      if (repetitions === 0) {
+        interval = 1;
+      } else if (repetitions === 1) {
+        interval = 6;
+      } else {
+        interval = Math.round(interval * easeFactor);
+      }
+      repetitions += 1;
+    } else {
+      streak = 0;
+      repetitions = 0;
+      interval = 1; // Reset to 1 day on fail
+    }
+
+    // Atualiza o Ease Factor baseado na qualidade da resposta (SM-2 fórmula)
+    easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    if (easeFactor < 1.3) easeFactor = 1.3;
+
+    const now = new Date();
+    const nextReviewDate = new Date(now);
+    nextReviewDate.setDate(now.getDate() + interval);
+
+    const docId = `${userId}_${itemType}_${itemId}`;
     await setDoc(doc(db, 'srs_data', docId), {
-      ...data,
-      nextReviewDate: Timestamp.fromDate(data.nextReviewDate),
-      lastReviewDate: Timestamp.fromDate(data.lastReviewDate),
+      id: itemId,
+      userId,
+      itemType,
+      interval,
+      repetitions,
+      easeFactor,
+      nextReviewDate: Timestamp.fromDate(nextReviewDate),
+      lastReviewDate: Timestamp.fromDate(now),
+      totalReviews,
+      correctReviews,
+      streak,
+      bestStreak
     });
   },
 
