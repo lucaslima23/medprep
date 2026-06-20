@@ -29,6 +29,7 @@ interface StudyContextType {
   refreshSRSData: () => Promise<void>;
   getStudyDayForDate: (date: string) => StudyDay | null;
   saveSRSReview: (itemId: string, itemType: 'question' | 'flashcard', quality: SRSQuality) => Promise<void>;
+  updateUserExamDate: (examDate: string) => Promise<boolean>;
 }
 
 const StudyContext = createContext<StudyContextType | undefined>(undefined);
@@ -137,6 +138,32 @@ export function StudyProvider({ children }: { children: ReactNode }) {
     }
   }, [user?.uid, refreshSRSData]);
 
+  /**
+   * NOVO: Atualiza a data de prova do usuário e recalcula o cronograma
+   */
+  const updateUserExamDate = useCallback(async (examDate: string) => {
+    if (!user?.uid) {
+      console.error('[STUDY] Usuário não encontrado');
+      return false;
+    }
+
+    try {
+      console.log('[STUDY] Atualizando data de prova para:', examDate);
+      const success = await scheduleService.updateUserExamDate(user.uid, examDate);
+      
+      if (success) {
+        // Recarregar o cronograma após a atualização
+        await refreshSchedule();
+        console.log('[STUDY] Data de prova atualizada e cronograma recalculado');
+      }
+      
+      return success;
+    } catch (err) {
+      console.error('[STUDY] Erro ao atualizar data de prova:', err);
+      return false;
+    }
+  }, [user?.uid, refreshSchedule]);
+
   return (
     <StudyContext.Provider value={{
       schedule,
@@ -150,7 +177,8 @@ export function StudyProvider({ children }: { children: ReactNode }) {
       refreshSchedule,
       refreshSRSData,
       getStudyDayForDate,
-      saveSRSReview
+      saveSRSReview,
+      updateUserExamDate
     }}>
       {children}
     </StudyContext.Provider>

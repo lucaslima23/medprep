@@ -10,6 +10,7 @@ export interface User {
   photoURL?: string;
   role: 'student' | 'admin' | 'associado';
   expirationDate?: string;
+  customExamDate?: string;     // NOVO: Data da prova personalizada do usuário (YYYY-MM-DD)
   createdAt: Date;
   lastLoginAt: Date;
   settings: UserSettings;
