@@ -108,6 +108,7 @@ export const userService = {
           photoURL: data.photoURL || '',
           role: data.role || 'student',
           expirationDate: data.expirationDate,
+          customExamDate: data.customExamDate,
           createdAt: data.createdAt,
           lastLoginAt: data.lastLoginAt,
           settings: data.settings || {
@@ -683,7 +684,8 @@ export const scheduleService = {
 
   /**
    * Gera um cronograma personalizado para um usuário
-   * Lê todos os temas de meta_contents e distribui nos dias úteis até 18 de outubro de 2026
+   * Lê todos os temas de meta_contents e distribui nos dias úteis até a data de prova
+   * Utiliza a data customizada do usuário, senão a data global de settings
    */
   async generatePersonalizedSchedule(userId: string) {
     if (!userId) {
@@ -738,15 +740,26 @@ export const scheduleService = {
       }
       startDate.setHours(0, 0, 0, 0);
 
-      // Data Final: Busca da settings/general, Senao usa fallback 18 de outubro de 2026
-      let endDate = new Date(2026, 9, 18); // Outubro é mês 9
+      // Data Final: Tenta usar customExamDate do usuário, senão settings global, senão fallback
+      let endDate = new Date(2026, 9, 18); // Outubro é mês 9 (fallback)
       try {
-        const settingsDoc = await getDoc(doc(db, 'settings', 'general'));
-        if (settingsDoc.exists() && settingsDoc.data().examDate) {
-          endDate = new Date(settingsDoc.data().examDate);
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        if (userDoc.exists() && userDoc.data().customExamDate) {
+          // NOVO: Usa a data customizada do usuário
+          console.log('[SCHEDULE] Usando customExamDate do usuário:', userDoc.data().customExamDate);
+          endDate = new Date(userDoc.data().customExamDate);
+        } else {
+          // Fallback para data global
+          const settingsDoc = await getDoc(doc(db, 'settings', 'general'));
+          if (settingsDoc.exists() && settingsDoc.data().examDate) {
+            console.log('[SCHEDULE] Usando examDate global:', settingsDoc.data().examDate);
+            endDate = new Date(settingsDoc.data().examDate);
+          } else {
+            console.log('[SCHEDULE] Usando data padrão:', endDate);
+          }
         }
       } catch (err) {
-        console.warn('Error fetching custom examDate', err);
+        console.warn('Error fetching examDate', err);
       }
       endDate.setHours(0, 0, 0, 0);
 
@@ -857,6 +870,37 @@ export const scheduleService = {
       return null;
     }
   },
+
+  /**
+   * NOVO: Atualiza a data de prova personalizada do usuário e recalcula o cronograma
+   */
+  async updateUserExamDate(userId: string, examDate: string) {
+    if (!userId || !examDate) {
+      console.error('[SCHEDULE] userId ou examDate não informados');
+      return false;
+    }
+
+    try {
+      console.log('[SCHEDULE] Atualizando customExamDate para usuário:', userId, 'data:', examDate);
+      
+      // 1. Atualizar o campo customExamDate do usuário
+      await updateDoc(doc(db, 'users', userId), {
+        customExamDate: examDate
+      });
+      
+      console.log('[SCHEDULE] customExamDate atualizado com sucesso');
+
+      // 2. Recalcular o cronograma com a nova data
+      await this.generatePersonalizedSchedule(userId);
+      
+      console.log('[SCHEDULE] Cronograma recalculado com sucesso');
+      return true;
+    } catch (error) {
+      console.error('[SCHEDULE] Erro ao atualizar customExamDate:', error);
+      return false;
+    }
+  },
+
   async getMetaContents() {
     try {
       const q = query(collections.metaContents, orderBy('order', 'asc'));
